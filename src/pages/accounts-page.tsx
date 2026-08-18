@@ -5,6 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { accountsApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { getErrorMessage } from '@/lib/api';
+import { PageHeader } from '@/components/ui/page-header';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input, Select } from '@/components/ui/input';
 
 const schema = z.object({
   name: z.string().min(2),
@@ -48,75 +52,58 @@ export function AccountsPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl">Contas</h1>
-        <p className="text-sm text-[var(--color-ink-muted)]">Carteiras e saldos</p>
-      </header>
+      <PageHeader title="Contas" description="Carteiras e saldos" />
 
-      <form
-        className="grid gap-3 rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5 md:grid-cols-4"
-        onSubmit={(e) =>
-          void handleSubmit((values) => createMutation.mutateAsync(values))(e)
-        }
-      >
-        <input
-          placeholder="Nome"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...register('name')}
-        />
-        <select className="rounded-xl border border-[var(--color-line)] px-3 py-2" {...register('type')}>
-          <option value="checking">Corrente</option>
-          <option value="cash">Dinheiro</option>
-          <option value="credit">Crédito</option>
-          <option value="savings">Poupança</option>
-          <option value="investment">Investimento</option>
-          <option value="other">Outro</option>
-        </select>
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Saldo inicial"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...register('initialBalance', { valueAsNumber: true })}
-        />
-        <button
-          type="submit"
-          disabled={isSubmitting || createMutation.isPending}
-          className="rounded-xl bg-[var(--color-accent)] px-4 py-2 font-medium text-white"
+      <Card>
+        <form
+          className="grid gap-3 md:grid-cols-4"
+          onSubmit={(e) =>
+            void handleSubmit((values) => createMutation.mutateAsync(values))(e)
+          }
         >
-          Adicionar
-        </button>
-        {(errors.name || createMutation.error) && (
-          <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
-            {errors.name?.message ?? getErrorMessage(createMutation.error)}
-          </p>
-        )}
-      </form>
+          <Input placeholder="Nome" {...register('name')} />
+          <Select {...register('type')}>
+            <option value="checking">Corrente</option>
+            <option value="cash">Dinheiro</option>
+            <option value="credit">Crédito</option>
+            <option value="savings">Poupança</option>
+            <option value="investment">Investimento</option>
+            <option value="other">Outro</option>
+          </Select>
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="Saldo inicial"
+            {...register('initialBalance', { valueAsNumber: true })}
+          />
+          <Button type="submit" disabled={isSubmitting || createMutation.isPending}>
+            Adicionar
+          </Button>
+          {(errors.name || createMutation.error) && (
+            <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
+              {errors.name?.message ?? getErrorMessage(createMutation.error)}
+            </p>
+          )}
+        </form>
+      </Card>
 
       {isLoading ? (
-        <p>Carregando...</p>
+        <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
         <ul className="space-y-3">
           {data.map((account) => (
-            <li
-              key={account.id}
-              className="flex items-center justify-between rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] px-5 py-4"
-            >
+            <li key={account.id} className="glass-card flex items-center justify-between px-5 py-4">
               <div>
                 <p className="font-medium">{account.name}</p>
-                <p className="text-sm text-[var(--color-ink-muted)]">{account.type}</p>
+                <p className="text-sm text-[var(--color-text-muted)]">{account.type}</p>
               </div>
               <div className="flex items-center gap-4">
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-semibold text-[var(--color-gold-light)]">
                   {formatCurrency(account.balance ?? account.initialBalance, account.currency)}
                 </p>
-                <button
-                  type="button"
-                  className="text-sm text-[var(--color-danger)]"
-                  onClick={() => removeMutation.mutate(account.id)}
-                >
+                <Button variant="danger" onClick={() => removeMutation.mutate(account.id)}>
                   Remover
-                </button>
+                </Button>
               </div>
             </li>
           ))}

@@ -7,7 +7,7 @@ export function ProtectedRoute() {
 
   if (loading) {
     return (
-      <div className="grid min-h-screen place-items-center text-[var(--color-ink-muted)]">
+      <div className="grid min-h-screen place-items-center text-[var(--color-text-muted)]">
         Carregando...
       </div>
     );

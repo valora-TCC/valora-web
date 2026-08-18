@@ -6,6 +6,10 @@ import { format } from 'date-fns';
 import { investmentsApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { getErrorMessage } from '@/lib/api';
+import { PageHeader } from '@/components/ui/page-header';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input, Select } from '@/components/ui/input';
 
 const schema = z.object({
   name: z.string().min(2),
@@ -68,123 +72,91 @@ export function InvestmentsPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl">Investimentos</h1>
-        <p className="text-sm text-[var(--color-ink-muted)]">Carteira e aportes</p>
-      </header>
+      <PageHeader title="Investimentos" description="Carteira e aportes" />
 
-      <form
-        className="grid gap-3 rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5 md:grid-cols-4"
-        onSubmit={(e) =>
-          void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
-        }
-      >
-        <input
-          placeholder="Nome"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...createForm.register('name')}
-        />
-        <input
-          placeholder="Ticker"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...createForm.register('ticker')}
-        />
-        <select
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...createForm.register('type')}
+      <Card>
+        <form
+          className="grid gap-3 md:grid-cols-4"
+          onSubmit={(e) =>
+            void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
+          }
         >
-          <option value="stock">Ação</option>
-          <option value="fund">Fundo</option>
-          <option value="fixed_income">Renda fixa</option>
-          <option value="crypto">Cripto</option>
-          <option value="other">Outro</option>
-        </select>
-        <button
-          type="submit"
-          className="rounded-xl bg-[var(--color-accent)] px-4 py-2 font-medium text-white"
-        >
-          Criar ativo
-        </button>
-      </form>
+          <Input placeholder="Nome" {...createForm.register('name')} />
+          <Input placeholder="Ticker" {...createForm.register('ticker')} />
+          <Select {...createForm.register('type')}>
+            <option value="stock">Ação</option>
+            <option value="fund">Fundo</option>
+            <option value="fixed_income">Renda fixa</option>
+            <option value="crypto">Cripto</option>
+            <option value="other">Outro</option>
+          </Select>
+          <Button type="submit">Criar ativo</Button>
+        </form>
+      </Card>
 
-      <form
-        className="grid gap-3 rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5 md:grid-cols-5"
-        onSubmit={(e) =>
-          void txForm.handleSubmit(async (values) => {
-            await txMutation.mutateAsync({
-              ...values,
-              occurredAt: new Date(values.occurredAt).toISOString(),
-            });
-          })(e)
-        }
-      >
-        <select
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...txForm.register('investmentId')}
+      <Card>
+        <form
+          className="grid gap-3 md:grid-cols-5"
+          onSubmit={(e) =>
+            void txForm.handleSubmit(async (values) => {
+              await txMutation.mutateAsync({
+                ...values,
+                occurredAt: new Date(values.occurredAt).toISOString(),
+              });
+            })(e)
+          }
         >
-          <option value="">Ativo</option>
-          {data.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...txForm.register('kind')}
-        >
-          <option value="buy">Compra</option>
-          <option value="sell">Venda</option>
-          <option value="dividend">Dividendo</option>
-        </select>
-        <input
-          type="number"
-          step="0.00000001"
-          placeholder="Qtd"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...txForm.register('quantity', { valueAsNumber: true })}
-        />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Preço"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...txForm.register('unitPrice', { valueAsNumber: true })}
-        />
-        <button type="submit" className="rounded-xl bg-[var(--color-ink)] px-4 py-2 font-medium text-white">
-          Registrar movimento
-        </button>
-        {txMutation.error && (
-          <p className="md:col-span-5 text-sm text-[var(--color-danger)]">
-            {getErrorMessage(txMutation.error)}
-          </p>
-        )}
-      </form>
+          <Select {...txForm.register('investmentId')}>
+            <option value="">Ativo</option>
+            {data.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </Select>
+          <Select {...txForm.register('kind')}>
+            <option value="buy">Compra</option>
+            <option value="sell">Venda</option>
+            <option value="dividend">Dividendo</option>
+          </Select>
+          <Input
+            type="number"
+            step="0.00000001"
+            placeholder="Qtd"
+            {...txForm.register('quantity', { valueAsNumber: true })}
+          />
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="Preço"
+            {...txForm.register('unitPrice', { valueAsNumber: true })}
+          />
+          <Button type="submit">Registrar movimento</Button>
+          {txMutation.error && (
+            <p className="md:col-span-5 text-sm text-[var(--color-danger)]">
+              {getErrorMessage(txMutation.error)}
+            </p>
+          )}
+        </form>
+      </Card>
 
       {isLoading ? (
-        <p>Carregando...</p>
+        <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
         <ul className="space-y-3">
           {data.map((item) => (
-            <li
-              key={item.id}
-              className="flex items-center justify-between rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] px-5 py-4"
-            >
+            <li key={item.id} className="glass-card flex items-center justify-between px-5 py-4">
               <div>
                 <p className="font-medium">
                   {item.name} {item.ticker ? `(${item.ticker})` : ''}
                 </p>
-                <p className="text-sm text-[var(--color-ink-muted)]">
+                <p className="text-sm text-[var(--color-text-muted)]">
                   {item.quantity} un · média {formatCurrency(item.averagePrice, item.currency)}
                 </p>
               </div>
-              <button
-                type="button"
-                className="text-sm text-[var(--color-danger)]"
-                onClick={() => removeMutation.mutate(item.id)}
-              >
+              <Button variant="danger" onClick={() => removeMutation.mutate(item.id)}>
                 Remover
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

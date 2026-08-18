@@ -6,6 +6,10 @@ import { format } from 'date-fns';
 import { accountsApi, categoriesApi, transactionsApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { getErrorMessage } from '@/lib/api';
+import { PageHeader } from '@/components/ui/page-header';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input, Select } from '@/components/ui/input';
 
 const schema = z.object({
   accountId: z.string().uuid(),
@@ -72,92 +76,73 @@ export function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl">Transações</h1>
-        <p className="text-sm text-[var(--color-ink-muted)]">Receitas e despesas</p>
-      </header>
+      <PageHeader title="Transações" description="Receitas e despesas" />
 
-      <form
-        className="grid gap-3 rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5 md:grid-cols-3"
-        onSubmit={(e) =>
-          void handleSubmit(async (values) => {
-            await createMutation.mutateAsync({
-              ...values,
-              categoryId: values.categoryId || undefined,
-              occurredAt: new Date(values.occurredAt).toISOString(),
-            });
-          })(e)
-        }
-      >
-        <input
-          placeholder="Descrição"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2 md:col-span-2"
-          {...register('description')}
-        />
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Valor"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...register('amount', { valueAsNumber: true })}
-        />
-        <select className="rounded-xl border border-[var(--color-line)] px-3 py-2" {...register('type')}>
-          <option value="expense">Despesa</option>
-          <option value="income">Receita</option>
-        </select>
-        <select
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...register('accountId')}
+      <Card>
+        <form
+          className="grid gap-3 md:grid-cols-3"
+          onSubmit={(e) =>
+            void handleSubmit(async (values) => {
+              await createMutation.mutateAsync({
+                ...values,
+                categoryId: values.categoryId || undefined,
+                occurredAt: new Date(values.occurredAt).toISOString(),
+              });
+            })(e)
+          }
         >
-          <option value="">Conta</option>
-          {accounts.map((account) => (
-            <option key={account.id} value={account.id}>
-              {account.name}
-            </option>
-          ))}
-        </select>
-        <select
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...register('categoryId')}
-        >
-          <option value="">Categoria</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="datetime-local"
-          className="rounded-xl border border-[var(--color-line)] px-3 py-2"
-          {...register('occurredAt')}
-        />
-        <button
-          type="submit"
-          disabled={isSubmitting || createMutation.isPending}
-          className="rounded-xl bg-[var(--color-accent)] px-4 py-2 font-medium text-white md:col-span-2"
-        >
-          Registrar
-        </button>
-        {createMutation.error && (
-          <p className="md:col-span-3 text-sm text-[var(--color-danger)]">
-            {getErrorMessage(createMutation.error)}
-          </p>
-        )}
-      </form>
+          <Input placeholder="Descrição" className="md:col-span-2" {...register('description')} />
+          <Input
+            type="number"
+            step="0.01"
+            placeholder="Valor"
+            {...register('amount', { valueAsNumber: true })}
+          />
+          <Select {...register('type')}>
+            <option value="expense">Despesa</option>
+            <option value="income">Receita</option>
+          </Select>
+          <Select {...register('accountId')}>
+            <option value="">Conta</option>
+            {accounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </Select>
+          <Select {...register('categoryId')}>
+            <option value="">Categoria</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </Select>
+          <Input type="datetime-local" {...register('occurredAt')} />
+          <Button
+            type="submit"
+            className="md:col-span-2"
+            disabled={isSubmitting || createMutation.isPending}
+          >
+            Registrar
+          </Button>
+          {createMutation.error && (
+            <p className="md:col-span-3 text-sm text-[var(--color-danger)]">
+              {getErrorMessage(createMutation.error)}
+            </p>
+          )}
+        </form>
+      </Card>
 
       {isLoading ? (
-        <p>Carregando...</p>
+        <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
         <ul className="space-y-3">
           {(data?.items ?? []).map((tx) => (
-            <li
-              key={tx.id}
-              className="flex items-center justify-between rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] px-5 py-4"
-            >
+            <li key={tx.id} className="glass-card flex items-center justify-between px-5 py-4">
               <div>
                 <p className="font-medium">{tx.description}</p>
-                <p className="text-sm text-[var(--color-ink-muted)]">
+                <p className="text-sm text-[var(--color-text-muted)]">
                   {tx.account?.name} · {tx.category?.name ?? 'Sem categoria'} ·{' '}
                   {format(new Date(tx.occurredAt), 'dd/MM/yyyy HH:mm')}
                 </p>
@@ -170,13 +155,9 @@ export function TransactionsPage() {
                 >
                   {formatCurrency(tx.amount)}
                 </p>
-                <button
-                  type="button"
-                  className="text-sm text-[var(--color-danger)]"
-                  onClick={() => removeMutation.mutate(tx.id)}
-                >
+                <Button variant="danger" onClick={() => removeMutation.mutate(tx.id)}>
                   Remover
-                </button>
+                </Button>
               </div>
             </li>
           ))}

@@ -12,6 +12,18 @@ import {
 import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
+import { PageHeader } from '@/components/ui/page-header';
+import { StatCard } from '@/components/ui/stat-card';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+
+const chartColors = {
+  grid: '#063D32',
+  tick: '#8A9A94',
+  bar: '#00C978',
+  tooltipBg: '#031C17',
+  tooltipBorder: 'rgba(0, 201, 120, 0.15)',
+};
 
 export function DashboardPage() {
   const [from, setFrom] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
@@ -33,69 +45,53 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-[family-name:var(--font-display)] text-4xl">Dashboard</h1>
-          <p className="text-sm text-[var(--color-ink-muted)]">Indicadores do período selecionado</p>
-        </div>
+      <PageHeader title="Visão geral" description="Indicadores do período selecionado">
         <div className="flex gap-2">
-          <input
-            type="date"
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="rounded-xl border border-[var(--color-line)] bg-white px-3 py-2 text-sm"
-          />
-          <input
-            type="date"
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="rounded-xl border border-[var(--color-line)] bg-white px-3 py-2 text-sm"
-          />
+          <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
         </div>
-      </header>
+      </PageHeader>
 
-      {isLoading && <p className="text-[var(--color-ink-muted)]">Carregando...</p>}
+      {isLoading && <p className="text-[var(--color-text-muted)]">Carregando...</p>}
       {error && <p className="text-[var(--color-danger)]">Falha ao carregar dashboard</p>}
 
       {data && (
         <>
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {[
-              { label: 'Saldo', value: data.totals.balance },
-              { label: 'Receitas', value: data.totals.income },
-              { label: 'Despesas', value: data.totals.expense },
-              { label: 'Resultado', value: data.totals.net },
-            ].map((card) => (
-              <div
-                key={card.label}
-                className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5"
-              >
-                <p className="text-sm text-[var(--color-ink-muted)]">{card.label}</p>
-                <p className="mt-2 text-2xl font-semibold">{formatCurrency(card.value)}</p>
-              </div>
-            ))}
+            <StatCard label="Saldo" value={formatCurrency(data.totals.balance)} highlight />
+            <StatCard label="Receitas" value={formatCurrency(data.totals.income)} />
+            <StatCard label="Despesas" value={formatCurrency(data.totals.expense)} />
+            <StatCard label="Resultado" value={formatCurrency(data.totals.net)} />
           </section>
 
-          <section className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5">
+          <Card>
             <h2 className="mb-4 text-lg font-semibold">Despesas por categoria</h2>
             <div className="h-72">
               {chartData.length === 0 ? (
-                <p className="text-sm text-[var(--color-ink-muted)]">Sem despesas no período.</p>
+                <p className="text-sm text-[var(--color-text-muted)]">Sem despesas no período.</p>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip formatter={(value) => formatCurrency(Number(value ?? 0))} />
-                    <Bar dataKey="amount" fill="#1f6f5b" radius={[8, 8, 0, 0]} />
+                    <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartColors.tick }} axisLine={false} />
+                    <YAxis tick={{ fontSize: 12, fill: chartColors.tick }} axisLine={false} />
+                    <Tooltip
+                      formatter={(value) => formatCurrency(Number(value ?? 0))}
+                      contentStyle={{
+                        background: chartColors.tooltipBg,
+                        border: `1px solid ${chartColors.tooltipBorder}`,
+                        borderRadius: 12,
+                        color: '#F4F5F2',
+                      }}
+                    />
+                    <Bar dataKey="amount" fill={chartColors.bar} radius={[8, 8, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
             </div>
-          </section>
+          </Card>
 
-          <section className="rounded-2xl border border-[var(--color-line)] bg-[var(--color-panel)] p-5">
+          <Card>
             <h2 className="mb-4 text-lg font-semibold">Transações recentes</h2>
             <ul className="space-y-3">
               {data.recentTransactions.map((tx) => (
@@ -105,7 +101,7 @@ export function DashboardPage() {
                 >
                   <div>
                     <p className="font-medium">{tx.description}</p>
-                    <p className="text-sm text-[var(--color-ink-muted)]">
+                    <p className="text-sm text-[var(--color-text-muted)]">
                       {tx.category?.name ?? 'Sem categoria'} ·{' '}
                       {format(new Date(tx.occurredAt), 'dd/MM/yyyy')}
                     </p>
@@ -121,7 +117,7 @@ export function DashboardPage() {
                 </li>
               ))}
             </ul>
-          </section>
+          </Card>
         </>
       )}
     </div>

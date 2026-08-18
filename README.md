@@ -11,11 +11,13 @@ Frontend React do Valora — gestão financeira pessoal.
 
 ## Configuração
 
+Requer [pnpm](https://pnpm.io/installation) (`npm install -g pnpm`).
+
 ```powershell
 Copy-Item .env.example .env
 # Preencha VITE_API_URL, VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 App: `http://localhost:5173`
@@ -26,11 +28,11 @@ A API (`valora-api`) precisa estar rodando em `http://localhost:3000`.
 
 | Comando | Descrição |
 |---------|-----------|
-| `npm run dev` | Dev server |
-| `npm run build` | Build produção |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | TypeScript |
-| `npm test` | Vitest |
+| `pnpm dev` | Dev server |
+| `pnpm build` | Build produção |
+| `pnpm lint` | ESLint |
+| `pnpm typecheck` | TypeScript |
+| `pnpm test` | Vitest |
 
 ## Segurança
 

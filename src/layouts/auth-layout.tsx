@@ -1,15 +1,22 @@
 import { Outlet } from 'react-router-dom';
+import { Logo } from '@/components/brand/logo';
 
 export function AuthLayout() {
   return (
     <div className="grid min-h-screen place-items-center px-4 py-10">
-      <div className="w-full max-w-md rounded-3xl border border-[var(--color-line)] bg-[var(--color-panel)]/90 p-8 shadow-sm backdrop-blur">
-        <p className="font-[family-name:var(--font-display)] text-4xl text-[var(--color-ink)]">Valora</p>
-        <p className="mt-2 text-sm text-[var(--color-ink-muted)]">
-          Entre para acompanhar seu fluxo financeiro.
-        </p>
-        <div className="mt-8">
-          <Outlet />
+      <div className="relative w-full max-w-md">
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] blur-3xl"
+          style={{ background: 'radial-gradient(circle, rgba(0,201,120,0.12), transparent 70%)' }}
+        />
+        <div className="glass-card glow-emerald p-8">
+          <Logo size="lg" />
+          <p className="mt-3 text-sm text-[var(--color-text-muted)]">
+            Seu dinheiro merece mais valor.
+          </p>
+          <div className="mt-8">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>
