@@ -2,27 +2,27 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { accountsApi } from '@/services/finance';
+import { carteirasApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { getErrorMessage } from '@/lib/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input, Select } from '@/components/ui/input';
+import { Input } from '@/components/ui/input';
 
 const schema = z.object({
-  name: z.string().min(2),
-  type: z.enum(['checking', 'cash', 'credit', 'savings', 'investment', 'other']),
-  initialBalance: z.number(),
+  nome: z.string().min(2),
+  descricao: z.string().optional(),
+  saldoAtual: z.number(),
 });
 
 type FormData = z.infer<typeof schema>;
 
-export function AccountsPage() {
+export function CarteirasPage() {
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({
-    queryKey: ['accounts'],
-    queryFn: accountsApi.list,
+    queryKey: ['carteiras'],
+    queryFn: carteirasApi.list,
   });
 
   const {
@@ -32,27 +32,27 @@ export function AccountsPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
-    defaultValues: { type: 'checking', initialBalance: 0 },
+    defaultValues: { saldoAtual: 0, descricao: '' },
   });
 
   const createMutation = useMutation({
-    mutationFn: (values: FormData) => accountsApi.create(values),
+    mutationFn: (values: FormData) => carteirasApi.create(values),
     onSuccess: async () => {
-      reset({ name: '', type: 'checking', initialBalance: 0 });
-      await queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      reset({ nome: '', descricao: '', saldoAtual: 0 });
+      await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
     },
   });
 
   const removeMutation = useMutation({
-    mutationFn: accountsApi.remove,
+    mutationFn: carteirasApi.remove,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
     },
   });
 
   return (
     <div className="space-y-6">
-      <PageHeader title="Contas" description="Carteiras e saldos" />
+      <PageHeader title="Carteiras" description="Saldos e contas financeiras" />
 
       <Card>
         <form
@@ -61,27 +61,20 @@ export function AccountsPage() {
             void handleSubmit((values) => createMutation.mutateAsync(values))(e)
           }
         >
-          <Input placeholder="Nome" {...register('name')} />
-          <Select {...register('type')}>
-            <option value="checking">Corrente</option>
-            <option value="cash">Dinheiro</option>
-            <option value="credit">Crédito</option>
-            <option value="savings">Poupança</option>
-            <option value="investment">Investimento</option>
-            <option value="other">Outro</option>
-          </Select>
+          <Input placeholder="Nome" {...register('nome')} />
+          <Input placeholder="Descrição" {...register('descricao')} />
           <Input
             type="number"
             step="0.01"
             placeholder="Saldo inicial"
-            {...register('initialBalance', { valueAsNumber: true })}
+            {...register('saldoAtual', { valueAsNumber: true })}
           />
           <Button type="submit" disabled={isSubmitting || createMutation.isPending}>
             Adicionar
           </Button>
-          {(errors.name || createMutation.error) && (
+          {(errors.nome || createMutation.error) && (
             <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
-              {errors.name?.message ?? getErrorMessage(createMutation.error)}
+              {errors.nome?.message ?? getErrorMessage(createMutation.error)}
             </p>
           )}
         </form>
@@ -91,17 +84,19 @@ export function AccountsPage() {
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
         <ul className="space-y-3">
-          {data.map((account) => (
-            <li key={account.id} className="glass-card flex items-center justify-between px-5 py-4">
+          {data.map((carteira) => (
+            <li key={carteira.id} className="glass-card flex items-center justify-between px-5 py-4">
               <div>
-                <p className="font-medium">{account.name}</p>
-                <p className="text-sm text-[var(--color-text-muted)]">{account.type}</p>
+                <p className="font-medium">{carteira.nome}</p>
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  {carteira.descricao || (carteira.ativo ? 'Ativa' : 'Inativa')}
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <p className="text-lg font-semibold text-[var(--color-gold-light)]">
-                  {formatCurrency(account.balance ?? account.initialBalance, account.currency)}
+                  {formatCurrency(carteira.saldoAtual)}
                 </p>
-                <Button variant="danger" onClick={() => removeMutation.mutate(account.id)}>
+                <Button variant="danger" onClick={() => removeMutation.mutate(carteira.id)}>
                   Remover
                 </Button>
               </div>

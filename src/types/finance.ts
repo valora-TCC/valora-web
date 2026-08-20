@@ -1,38 +1,41 @@
-export type Profile = {
+export type TipoFinanceiro = 'RECEITA' | 'DESPESA';
+
+export type Usuario = {
   id: string;
-  fullName: string | null;
-  avatarUrl: string | null;
+  nome: string;
+  email: string | null;
+  dataNascimento: string | null;
+  ativo: boolean;
 };
 
-export type Account = {
+export type Carteira = {
   id: string;
-  name: string;
-  type: string;
-  currency: string;
-  initialBalance: string | number;
-  isArchived: boolean;
-  balance?: string | number;
+  idUsuario: string;
+  nome: string;
+  descricao: string | null;
+  saldoAtual: string | number;
+  ativo: boolean;
 };
 
-export type Category = {
+export type Categoria = {
   id: string;
-  name: string;
-  kind: 'income' | 'expense';
-  color: string | null;
-  icon: string | null;
+  nome: string;
+  tipo: TipoFinanceiro;
+  cor: string | null;
+  icone: string | null;
 };
 
-export type Transaction = {
+export type Transacao = {
   id: string;
-  accountId: string;
-  categoryId: string | null;
-  type: 'income' | 'expense' | 'transfer';
-  amount: string | number;
-  occurredAt: string;
-  description: string;
-  notes: string | null;
-  account?: Account;
-  category?: Category | null;
+  idCarteira: string;
+  idCategoria: string;
+  tipo: TipoFinanceiro;
+  valor: string | number;
+  dataTransacao: string;
+  descricao: string;
+  formaPagamento: string | null;
+  carteira?: Carteira;
+  categoria?: Categoria;
 };
 
 export type Paginated<T> = {
@@ -58,7 +61,52 @@ export type DashboardSummary = {
     categoryName: string;
     amount: string | number;
   }>;
-  recentTransactions: Transaction[];
+  recentTransactions: Transacao[];
+};
+
+export type ProgressoMeta = {
+  id: string;
+  idMeta: string;
+  data: string;
+  valor: string | number;
+  observacao: string | null;
+};
+
+export type Meta = {
+  id: string;
+  nome: string;
+  descricao: string | null;
+  valorObjetivo: string | number;
+  valorAtual: string | number;
+  dataInicio: string;
+  dataFim: string;
+  ativo: boolean;
+  percentual: number;
+  progressos?: ProgressoMeta[];
+};
+
+export type OrcamentoCategoria = {
+  id: string;
+  idOrcamento: string;
+  idCategoria: string;
+  limite: string | number;
+  valorGasto: string | number;
+  percentual: number;
+  status: 'DENTRO' | 'ACIMA';
+  categoria?: Categoria;
+};
+
+export type Orcamento = {
+  id: string;
+  mes: number;
+  ano: number;
+  nome: string;
+  valorTotal: string | number;
+  observacao: string | null;
+  ativo: boolean;
+  totalGasto: string | number;
+  status: 'DENTRO' | 'ACIMA';
+  categorias: OrcamentoCategoria[];
 };
 
 export type Investment = {

@@ -3,7 +3,7 @@ import { useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { accountsApi, categoriesApi, transactionsApi } from '@/services/finance';
+import { carteirasApi, categoriasApi, transacoesApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { getErrorMessage } from '@/lib/api';
 import { PageHeader } from '@/components/ui/page-header';
@@ -12,26 +12,26 @@ import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
 
 const schema = z.object({
-  accountId: z.string().uuid(),
-  categoryId: z.string().uuid().optional().or(z.literal('')),
-  type: z.enum(['income', 'expense']),
-  amount: z.number().positive(),
-  occurredAt: z.string().min(1),
-  description: z.string().min(2),
+  idCarteira: z.string().uuid(),
+  idCategoria: z.string().uuid(),
+  tipo: z.enum(['RECEITA', 'DESPESA']),
+  valor: z.number().positive(),
+  dataTransacao: z.string().min(1),
+  descricao: z.string().min(2),
 });
 
 type FormData = z.infer<typeof schema>;
 
-export function TransactionsPage() {
+export function TransacoesPage() {
   const queryClient = useQueryClient();
-  const { data: accounts = [] } = useQuery({ queryKey: ['accounts'], queryFn: accountsApi.list });
-  const { data: categories = [] } = useQuery({
-    queryKey: ['categories'],
-    queryFn: categoriesApi.list,
+  const { data: carteiras = [] } = useQuery({ queryKey: ['carteiras'], queryFn: carteirasApi.list });
+  const { data: categorias = [] } = useQuery({
+    queryKey: ['categorias'],
+    queryFn: categoriasApi.list,
   });
   const { data, isLoading } = useQuery({
-    queryKey: ['transactions'],
-    queryFn: () => transactionsApi.list({ page: 1, limit: 50 }),
+    queryKey: ['transacoes'],
+    queryFn: () => transacoesApi.list({ page: 1, limit: 50 }),
   });
 
   const {
@@ -42,35 +42,37 @@ export function TransactionsPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
-      type: 'expense',
-      occurredAt: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      description: '',
+      tipo: 'DESPESA',
+      dataTransacao: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      descricao: '',
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: transactionsApi.create,
+    mutationFn: transacoesApi.create,
     onSuccess: async () => {
       reset({
-        type: 'expense',
-        occurredAt: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-        description: '',
-        amount: 0,
-        accountId: accounts[0]?.id,
-        categoryId: '',
+        tipo: 'DESPESA',
+        dataTransacao: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+        descricao: '',
+        valor: 0,
+        idCarteira: carteiras[0]?.id,
+        idCategoria: categorias[0]?.id,
       });
-      await queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      await queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      await queryClient.invalidateQueries({ queryKey: ['transacoes'] });
+      await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
       await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      await queryClient.invalidateQueries({ queryKey: ['orcamentos'] });
     },
   });
 
   const removeMutation = useMutation({
-    mutationFn: transactionsApi.remove,
+    mutationFn: transacoesApi.remove,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['transactions'] });
-      await queryClient.invalidateQueries({ queryKey: ['accounts'] });
+      await queryClient.invalidateQueries({ queryKey: ['transacoes'] });
+      await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
       await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
+      await queryClient.invalidateQueries({ queryKey: ['orcamentos'] });
     },
   });
 
@@ -85,40 +87,39 @@ export function TransactionsPage() {
             void handleSubmit(async (values) => {
               await createMutation.mutateAsync({
                 ...values,
-                categoryId: values.categoryId || undefined,
-                occurredAt: new Date(values.occurredAt).toISOString(),
+                dataTransacao: new Date(values.dataTransacao).toISOString(),
               });
             })(e)
           }
         >
-          <Input placeholder="Descrição" className="md:col-span-2" {...register('description')} />
+          <Input placeholder="Descrição" className="md:col-span-2" {...register('descricao')} />
           <Input
             type="number"
             step="0.01"
             placeholder="Valor"
-            {...register('amount', { valueAsNumber: true })}
+            {...register('valor', { valueAsNumber: true })}
           />
-          <Select {...register('type')}>
-            <option value="expense">Despesa</option>
-            <option value="income">Receita</option>
+          <Select {...register('tipo')}>
+            <option value="DESPESA">Despesa</option>
+            <option value="RECEITA">Receita</option>
           </Select>
-          <Select {...register('accountId')}>
-            <option value="">Conta</option>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.name}
+          <Select {...register('idCarteira')}>
+            <option value="">Carteira</option>
+            {carteiras.map((carteira) => (
+              <option key={carteira.id} value={carteira.id}>
+                {carteira.nome}
               </option>
             ))}
           </Select>
-          <Select {...register('categoryId')}>
+          <Select {...register('idCategoria')}>
             <option value="">Categoria</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
+            {categorias.map((categoria) => (
+              <option key={categoria.id} value={categoria.id}>
+                {categoria.nome}
               </option>
             ))}
           </Select>
-          <Input type="datetime-local" {...register('occurredAt')} />
+          <Input type="datetime-local" {...register('dataTransacao')} />
           <Button
             type="submit"
             className="md:col-span-2"
@@ -141,19 +142,19 @@ export function TransactionsPage() {
           {(data?.items ?? []).map((tx) => (
             <li key={tx.id} className="glass-card flex items-center justify-between px-5 py-4">
               <div>
-                <p className="font-medium">{tx.description}</p>
+                <p className="font-medium">{tx.descricao}</p>
                 <p className="text-sm text-[var(--color-text-muted)]">
-                  {tx.account?.name} · {tx.category?.name ?? 'Sem categoria'} ·{' '}
-                  {format(new Date(tx.occurredAt), 'dd/MM/yyyy HH:mm')}
+                  {tx.carteira?.nome} · {tx.categoria?.nome} ·{' '}
+                  {format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <p
                   className={
-                    tx.type === 'expense' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                    tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
                   }
                 >
-                  {formatCurrency(tx.amount)}
+                  {formatCurrency(tx.valor)}
                 </p>
                 <Button variant="danger" onClick={() => removeMutation.mutate(tx.id)}>
                   Remover

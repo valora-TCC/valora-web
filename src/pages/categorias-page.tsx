@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { categoriesApi } from '@/services/finance';
+import { categoriasApi } from '@/services/finance';
 import { getErrorMessage } from '@/lib/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
@@ -12,18 +12,18 @@ import { Input, Select } from '@/components/ui/input';
 const DEFAULT_COLOR = '#00C978';
 
 const schema = z.object({
-  name: z.string().min(2),
-  kind: z.enum(['income', 'expense']),
-  color: z.string().optional(),
+  nome: z.string().min(2),
+  tipo: z.enum(['RECEITA', 'DESPESA']),
+  cor: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
 
-export function CategoriesPage() {
+export function CategoriasPage() {
   const queryClient = useQueryClient();
   const { data = [], isLoading } = useQuery({
-    queryKey: ['categories'],
-    queryFn: categoriesApi.list,
+    queryKey: ['categorias'],
+    queryFn: categoriasApi.list,
   });
 
   const {
@@ -33,21 +33,21 @@ export function CategoriesPage() {
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { kind: 'expense', color: DEFAULT_COLOR },
+    defaultValues: { tipo: 'DESPESA', cor: DEFAULT_COLOR },
   });
 
   const createMutation = useMutation({
-    mutationFn: categoriesApi.create,
+    mutationFn: categoriasApi.create,
     onSuccess: async () => {
-      reset({ name: '', kind: 'expense', color: DEFAULT_COLOR });
-      await queryClient.invalidateQueries({ queryKey: ['categories'] });
+      reset({ nome: '', tipo: 'DESPESA', cor: DEFAULT_COLOR });
+      await queryClient.invalidateQueries({ queryKey: ['categorias'] });
     },
   });
 
   const removeMutation = useMutation({
-    mutationFn: categoriesApi.remove,
+    mutationFn: categoriasApi.remove,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['categories'] });
+      await queryClient.invalidateQueries({ queryKey: ['categorias'] });
     },
   });
 
@@ -62,12 +62,12 @@ export function CategoriesPage() {
             void handleSubmit((values) => createMutation.mutateAsync(values))(e)
           }
         >
-          <Input placeholder="Nome" {...register('name')} />
-          <Select {...register('kind')}>
-            <option value="expense">Despesa</option>
-            <option value="income">Receita</option>
+          <Input placeholder="Nome" {...register('nome')} />
+          <Select {...register('tipo')}>
+            <option value="DESPESA">Despesa</option>
+            <option value="RECEITA">Receita</option>
           </Select>
-          <Input type="color" className="h-10 p-1" {...register('color')} />
+          <Input type="color" className="h-10 p-1" {...register('cor')} />
           <Button type="submit" disabled={isSubmitting || createMutation.isPending}>
             Adicionar
           </Button>
@@ -83,19 +83,19 @@ export function CategoriesPage() {
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
-          {data.map((category) => (
-            <li key={category.id} className="glass-card flex items-center justify-between px-5 py-4">
+          {data.map((categoria) => (
+            <li key={categoria.id} className="glass-card flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
                 <span
                   className="h-3 w-3 rounded-full"
-                  style={{ background: category.color ?? DEFAULT_COLOR }}
+                  style={{ background: categoria.cor ?? DEFAULT_COLOR }}
                 />
                 <div>
-                  <p className="font-medium">{category.name}</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">{category.kind}</p>
+                  <p className="font-medium">{categoria.nome}</p>
+                  <p className="text-sm text-[var(--color-text-muted)]">{categoria.tipo}</p>
                 </div>
               </div>
-              <Button variant="danger" onClick={() => removeMutation.mutate(category.id)}>
+              <Button variant="danger" onClick={() => removeMutation.mutate(categoria.id)}>
                 Remover
               </Button>
             </li>

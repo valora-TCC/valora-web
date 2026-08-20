@@ -9,9 +9,11 @@ import { LoginPage } from '@/pages/login-page';
 import { RegisterPage } from '@/pages/register-page';
 import { ForgotPasswordPage } from '@/pages/forgot-password-page';
 import { DashboardPage } from '@/pages/dashboard-page';
-import { AccountsPage } from '@/pages/accounts-page';
-import { CategoriesPage } from '@/pages/categories-page';
-import { TransactionsPage } from '@/pages/transactions-page';
+import { CarteirasPage } from '@/pages/carteiras-page';
+import { CategoriasPage } from '@/pages/categorias-page';
+import { TransacoesPage } from '@/pages/transacoes-page';
+import { MetasPage } from '@/pages/metas-page';
+import { OrcamentosPage } from '@/pages/orcamentos-page';
 import { InvestmentsPage } from '@/pages/investments-page';
 import { ProfileBootstrap } from '@/features/auth/profile-bootstrap';
 
@@ -31,9 +33,11 @@ export default function App() {
               <Route element={<ProfileBootstrap />}>
                 <Route element={<AppLayout />}>
                   <Route index element={<DashboardPage />} />
-                  <Route path="accounts" element={<AccountsPage />} />
-                  <Route path="categories" element={<CategoriesPage />} />
-                  <Route path="transactions" element={<TransactionsPage />} />
+                  <Route path="carteiras" element={<CarteirasPage />} />
+                  <Route path="categorias" element={<CategoriasPage />} />
+                  <Route path="transacoes" element={<TransacoesPage />} />
+                  <Route path="metas" element={<MetasPage />} />
+                  <Route path="orcamentos" element={<OrcamentosPage />} />
                   <Route path="investments" element={<InvestmentsPage />} />
                 </Route>
               </Route>

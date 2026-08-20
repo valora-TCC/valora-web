@@ -100,19 +100,19 @@ export function DashboardPage() {
                   className="flex items-center justify-between border-b border-[var(--color-line)] pb-3 last:border-0"
                 >
                   <div>
-                    <p className="font-medium">{tx.description}</p>
+                    <p className="font-medium">{tx.descricao}</p>
                     <p className="text-sm text-[var(--color-text-muted)]">
-                      {tx.category?.name ?? 'Sem categoria'} ·{' '}
-                      {format(new Date(tx.occurredAt), 'dd/MM/yyyy')}
+                      {tx.categoria?.nome ?? 'Sem categoria'} ·{' '}
+                      {format(new Date(tx.dataTransacao), 'dd/MM/yyyy')}
                     </p>
                   </div>
                   <p
                     className={
-                      tx.type === 'expense' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                      tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
                     }
                   >
-                    {tx.type === 'expense' ? '-' : '+'}
-                    {formatCurrency(tx.amount)}
+                    {tx.tipo === 'DESPESA' ? '-' : '+'}
+                    {formatCurrency(tx.valor)}
                   </p>
                 </li>
               ))}

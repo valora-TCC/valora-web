@@ -4,6 +4,8 @@ import {
   Wallet,
   Tags,
   ArrowLeftRight,
+  Target,
+  PiggyBank,
   LineChart,
   LogOut,
 } from 'lucide-react';
@@ -13,9 +15,11 @@ import { Logo } from '@/components/brand/logo';
 
 const links = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/accounts', label: 'Contas', icon: Wallet },
-  { to: '/categories', label: 'Categorias', icon: Tags },
-  { to: '/transactions', label: 'Transações', icon: ArrowLeftRight },
+  { to: '/carteiras', label: 'Carteiras', icon: Wallet },
+  { to: '/categorias', label: 'Categorias', icon: Tags },
+  { to: '/transacoes', label: 'Transações', icon: ArrowLeftRight },
+  { to: '/metas', label: 'Metas', icon: Target },
+  { to: '/orcamentos', label: 'Orçamento', icon: PiggyBank },
   { to: '/investments', label: 'Investimentos', icon: LineChart },
 ];
 

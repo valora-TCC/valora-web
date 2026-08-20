@@ -24,6 +24,8 @@ App: `http://localhost:5173`
 
 A API (`valora-api`) precisa estar rodando em `http://localhost:3000`.
 
+Documentação: [`docs/`](docs/) (frontend) e documentação completa do sistema no repositório [`valora-api`](https://github.com/PGalmeida/valora-api) (`docs/`).
+
 ## Scripts
 
 | Comando | Descrição |
