@@ -1,0 +1,5 @@
+shamefullyHoist: true
+strictPeerDependencies: false
+confirmModulesPurge: false
+allowBuilds:
+  esbuild: true
