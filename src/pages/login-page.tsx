@@ -30,7 +30,7 @@ export function LoginPage() {
       setError(authError.message);
       return;
     }
-    navigate('/');
+    navigate('/dashboard');
   });
 
   return (

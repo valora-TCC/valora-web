@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { Logo } from '@/components/brand/logo';
 
 export function AuthLayout() {
@@ -10,7 +10,9 @@ export function AuthLayout() {
           style={{ background: 'radial-gradient(circle, rgba(0,201,120,0.12), transparent 70%)' }}
         />
         <div className="glass-card glow-emerald p-8">
-          <Logo size="lg" />
+          <Link to="/" className="inline-block transition hover:opacity-90">
+            <Logo size="lg" />
+          </Link>
           <p className="mt-3 text-sm text-[var(--color-text-muted)]">
             Seu dinheiro merece mais valor.
           </p>

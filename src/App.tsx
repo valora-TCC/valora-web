@@ -5,9 +5,11 @@ import { AuthProvider } from '@/features/auth/auth-provider';
 import { ProtectedRoute } from '@/features/auth/protected-route';
 import { AppLayout } from '@/layouts/app-layout';
 import { AuthLayout } from '@/layouts/auth-layout';
+import { HomeLayout } from '@/layouts/home-layout';
 import { LoginPage } from '@/pages/login-page';
 import { RegisterPage } from '@/pages/register-page';
 import { ForgotPasswordPage } from '@/pages/forgot-password-page';
+import { HomePage } from '@/pages/home-page';
 import { DashboardPage } from '@/pages/dashboard-page';
 import { CarteirasPage } from '@/pages/carteiras-page';
 import { CategoriasPage } from '@/pages/categorias-page';
@@ -23,6 +25,10 @@ export default function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            <Route element={<HomeLayout />}>
+              <Route index element={<HomePage />} />
+            </Route>
+
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
@@ -32,7 +38,7 @@ export default function App() {
             <Route element={<ProtectedRoute />}>
               <Route element={<ProfileBootstrap />}>
                 <Route element={<AppLayout />}>
-                  <Route index element={<DashboardPage />} />
+                  <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="carteiras" element={<CarteirasPage />} />
                   <Route path="categorias" element={<CategoriasPage />} />
                   <Route path="transacoes" element={<TransacoesPage />} />
