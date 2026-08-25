@@ -8,13 +8,15 @@ import {
   PiggyBank,
   LineChart,
   LogOut,
+  Globe,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/utils/format';
 import { Logo } from '@/components/brand/logo';
 
 const links = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/', label: 'Mercado', icon: Globe },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/carteiras', label: 'Carteiras', icon: Wallet },
   { to: '/categorias', label: 'Categorias', icon: Tags },
   { to: '/transacoes', label: 'Transações', icon: ArrowLeftRight },
@@ -39,7 +41,7 @@ export function AppLayout() {
               <NavLink
                 key={to}
                 to={to}
-                end={to === '/'}
+                end={to === '/' || to === '/dashboard'}
                 className={({ isActive }) =>
                   cn(
                     'flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition',

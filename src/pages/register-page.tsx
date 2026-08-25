@@ -38,7 +38,7 @@ export function RegisterPage() {
       return;
     }
     if (data.session) {
-      navigate('/');
+      navigate('/dashboard');
       return;
     }
     setMessage('Conta criada. Verifique seu e-mail para confirmar o cadastro.');
