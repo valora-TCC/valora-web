@@ -2,6 +2,7 @@ import { Link, Outlet } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
 import { Logo } from '@/components/brand/logo';
 import { Button } from '@/components/ui/button';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/lib/supabase';
 
@@ -15,6 +16,7 @@ export function HomeLayout() {
           <Logo size="md" />
         </Link>
         <nav className="flex flex-wrap items-center gap-2">
+          <ThemeToggle />
           {!loading && session ? (
             <>
               <Link to="/dashboard">

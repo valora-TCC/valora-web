@@ -13,22 +13,16 @@ import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { useChartTheme } from '@/hooks/use-chart-theme';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ListRow } from '@/components/ui/list-row';
 
-const chartColors = {
-  grid: '#063D32',
-  tick: '#8A9A94',
-  bar: '#00C978',
-  tooltipBg: '#031C17',
-  tooltipBorder: 'rgba(0, 201, 120, 0.15)',
-};
-
 export function DashboardPage() {
   const isMobile = useMediaQuery('(max-width: 639px)');
+  const chartColors = useChartTheme();
   const [from, setFrom] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
 
@@ -119,7 +113,7 @@ export function DashboardPage() {
                         background: chartColors.tooltipBg,
                         border: `1px solid ${chartColors.tooltipBorder}`,
                         borderRadius: 12,
-                        color: '#F4F5F2',
+                        color: chartColors.tooltipText,
                       }}
                     />
                     <Bar dataKey="amount" fill={chartColors.bar} radius={[8, 8, 0, 0]} />
