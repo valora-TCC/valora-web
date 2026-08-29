@@ -81,7 +81,7 @@ export function MetasPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Metas" description="Defina objetivos e acompanhe o progresso" />
 
       <Card>
@@ -101,7 +101,7 @@ export function MetasPage() {
           <Input placeholder="Descrição" className="md:col-span-3" {...createForm.register('descricao')} />
           <Input type="date" {...createForm.register('dataInicio')} />
           <Input type="date" {...createForm.register('dataFim')} />
-          <Button type="submit" disabled={createMutation.isPending}>
+          <Button type="submit" className="w-full md:w-auto" disabled={createMutation.isPending}>
             Criar meta
           </Button>
           {createMutation.error && (
@@ -134,7 +134,7 @@ export function MetasPage() {
             {...progressoForm.register('valor', { valueAsNumber: true })}
           />
           <Input placeholder="Observação" {...progressoForm.register('observacao')} />
-          <Button type="submit" disabled={progressoMutation.isPending}>
+          <Button type="submit" className="w-full md:w-auto" disabled={progressoMutation.isPending}>
             Registrar progresso
           </Button>
           {progressoMutation.error && (
@@ -150,9 +150,9 @@ export function MetasPage() {
       ) : (
         <ul className="space-y-3">
           {data.map((meta) => (
-            <li key={meta.id} className="glass-card space-y-3 px-5 py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
+            <li key={meta.id} className="glass-card space-y-3 px-4 py-4 sm:px-5">
+              <div className="list-row items-start">
+                <div className="min-w-0 flex-1">
                   <p className="font-medium">{meta.nome}</p>
                   <p className="text-sm text-[var(--color-text-muted)]">
                     {formatCurrency(meta.valorAtual)} de {formatCurrency(meta.valorObjetivo)} ·{' '}
@@ -160,11 +160,15 @@ export function MetasPage() {
                     {format(new Date(meta.dataFim), 'dd/MM/yyyy')}
                   </p>
                 </div>
-                <Button variant="danger" onClick={() => removeMutation.mutate(meta.id)}>
+                <Button
+                  variant="danger"
+                  className="w-full sm:w-auto"
+                  onClick={() => removeMutation.mutate(meta.id)}
+                >
                   Remover
                 </Button>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[rgba(6,61,50,0.55)]">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[rgba(6,61,50,0.55)]">
                 <div
                   className="h-full rounded-full bg-[var(--color-emerald)]"
                   style={{ width: `${Math.min(meta.percentual, 100)}%` }}

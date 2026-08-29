@@ -15,7 +15,7 @@ export function StatCard({
       <p className="text-sm text-[var(--color-text-muted)]">{label}</p>
       <p
         className={cn(
-          'mt-2 text-2xl font-semibold tracking-tight',
+          'mt-2 text-xl font-semibold tracking-tight sm:text-2xl',
           highlight ? 'text-[var(--color-gold-light)]' : 'text-[var(--color-text)]',
         )}
       >

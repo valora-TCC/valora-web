@@ -10,6 +10,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { ListRow } from '@/components/ui/list-row';
 
 const schema = z.object({
   idCarteira: z.string().uuid(),
@@ -77,7 +78,7 @@ export function TransacoesPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Transações" description="Receitas e despesas" />
 
       <Card>
@@ -122,7 +123,7 @@ export function TransacoesPage() {
           <Input type="datetime-local" {...register('dataTransacao')} />
           <Button
             type="submit"
-            className="md:col-span-2"
+            className="w-full md:col-span-2 md:w-auto"
             disabled={isSubmitting || createMutation.isPending}
           >
             Registrar
@@ -140,27 +141,29 @@ export function TransacoesPage() {
       ) : (
         <ul className="space-y-3">
           {(data?.items ?? []).map((tx) => (
-            <li key={tx.id} className="glass-card flex items-center justify-between px-5 py-4">
-              <div>
-                <p className="font-medium">{tx.descricao}</p>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  {tx.carteira?.nome} · {tx.categoria?.nome} ·{' '}
-                  {format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <p
-                  className={
-                    tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
-                  }
-                >
-                  {formatCurrency(tx.valor)}
-                </p>
-                <Button variant="danger" onClick={() => removeMutation.mutate(tx.id)}>
-                  Remover
-                </Button>
-              </div>
-            </li>
+            <ListRow
+              key={tx.id}
+              title={tx.descricao}
+              subtitle={`${tx.carteira?.nome} · ${tx.categoria?.nome} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')}`}
+              trailing={
+                <>
+                  <p
+                    className={
+                      tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                    }
+                  >
+                    {formatCurrency(tx.valor)}
+                  </p>
+                  <Button
+                    variant="danger"
+                    className="w-full sm:w-auto"
+                    onClick={() => removeMutation.mutate(tx.id)}
+                  >
+                    Remover
+                  </Button>
+                </>
+              }
+            />
           ))}
         </ul>
       )}
