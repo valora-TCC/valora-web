@@ -12,10 +12,12 @@ import {
 import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { ListRow } from '@/components/ui/list-row';
 
 const chartColors = {
   grid: '#063D32',
@@ -26,6 +28,7 @@ const chartColors = {
 };
 
 export function DashboardPage() {
+  const isMobile = useMediaQuery('(max-width: 639px)');
   const [from, setFrom] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
 
@@ -44,12 +47,20 @@ export function DashboardPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Visão geral" description="Indicadores do período selecionado">
-        <div className="flex gap-2">
-          <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
-          <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} />
-        </div>
+        <Input
+          type="date"
+          className="min-w-0 flex-1 sm:flex-none"
+          value={from}
+          onChange={(e) => setFrom(e.target.value)}
+        />
+        <Input
+          type="date"
+          className="min-w-0 flex-1 sm:flex-none"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+        />
       </PageHeader>
 
       {isLoading && <p className="text-[var(--color-text-muted)]">Carregando...</p>}
@@ -66,15 +77,42 @@ export function DashboardPage() {
 
           <Card>
             <h2 className="mb-4 text-lg font-semibold">Despesas por categoria</h2>
-            <div className="h-72">
+            <div className="h-56 sm:h-72">
               {chartData.length === 0 ? (
                 <p className="text-sm text-[var(--color-text-muted)]">Sem despesas no período.</p>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
+                  <BarChart
+                    data={chartData}
+                    layout={isMobile ? 'vertical' : 'horizontal'}
+                    margin={isMobile ? { left: 8, right: 8 } : undefined}
+                  >
                     <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: chartColors.tick }} axisLine={false} />
-                    <YAxis tick={{ fontSize: 12, fill: chartColors.tick }} axisLine={false} />
+                    {isMobile ? (
+                      <>
+                        <XAxis type="number" tick={{ fontSize: 10, fill: chartColors.tick }} axisLine={false} />
+                        <YAxis
+                          type="category"
+                          dataKey="name"
+                          width={72}
+                          tick={{ fontSize: 10, fill: chartColors.tick }}
+                          axisLine={false}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <XAxis
+                          dataKey="name"
+                          tick={{ fontSize: 12, fill: chartColors.tick }}
+                          axisLine={false}
+                          interval={0}
+                          angle={-25}
+                          textAnchor="end"
+                          height={60}
+                        />
+                        <YAxis tick={{ fontSize: 12, fill: chartColors.tick }} axisLine={false} />
+                      </>
+                    )}
                     <Tooltip
                       formatter={(value) => formatCurrency(Number(value ?? 0))}
                       contentStyle={{
@@ -95,26 +133,23 @@ export function DashboardPage() {
             <h2 className="mb-4 text-lg font-semibold">Transações recentes</h2>
             <ul className="space-y-3">
               {data.recentTransactions.map((tx) => (
-                <li
+                <ListRow
                   key={tx.id}
-                  className="flex items-center justify-between border-b border-[var(--color-line)] pb-3 last:border-0"
-                >
-                  <div>
-                    <p className="font-medium">{tx.descricao}</p>
-                    <p className="text-sm text-[var(--color-text-muted)]">
-                      {tx.categoria?.nome ?? 'Sem categoria'} ·{' '}
-                      {format(new Date(tx.dataTransacao), 'dd/MM/yyyy')}
+                  asCard={false}
+                  className="border-b border-[var(--color-line)] pb-3 last:border-0"
+                  title={tx.descricao}
+                  subtitle={`${tx.categoria?.nome ?? 'Sem categoria'} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy')}`}
+                  trailing={
+                    <p
+                      className={
+                        tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                      }
+                    >
+                      {tx.tipo === 'DESPESA' ? '-' : '+'}
+                      {formatCurrency(tx.valor)}
                     </p>
-                  </div>
-                  <p
-                    className={
-                      tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
-                    }
-                  >
-                    {tx.tipo === 'DESPESA' ? '-' : '+'}
-                    {formatCurrency(tx.valor)}
-                  </p>
-                </li>
+                  }
+                />
               ))}
             </ul>
           </Card>

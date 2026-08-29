@@ -10,6 +10,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { ListRow } from '@/components/ui/list-row';
 
 const schema = z.object({
   name: z.string().min(2),
@@ -71,12 +72,12 @@ export function InvestmentsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Investimentos" description="Carteira e aportes" />
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-4"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) =>
             void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
           }
@@ -90,13 +91,15 @@ export function InvestmentsPage() {
             <option value="crypto">Cripto</option>
             <option value="other">Outro</option>
           </Select>
-          <Button type="submit">Criar ativo</Button>
+          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto">
+            Criar ativo
+          </Button>
         </form>
       </Card>
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-5"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           onSubmit={(e) =>
             void txForm.handleSubmit(async (values) => {
               await txMutation.mutateAsync({
@@ -131,9 +134,11 @@ export function InvestmentsPage() {
             placeholder="Preço"
             {...txForm.register('unitPrice', { valueAsNumber: true })}
           />
-          <Button type="submit">Registrar movimento</Button>
+          <Button type="submit" className="w-full sm:col-span-2 xl:col-span-1 xl:w-auto">
+            Registrar movimento
+          </Button>
           {txMutation.error && (
-            <p className="md:col-span-5 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] xl:col-span-5">
               {getErrorMessage(txMutation.error)}
             </p>
           )}
@@ -145,19 +150,24 @@ export function InvestmentsPage() {
       ) : (
         <ul className="space-y-3">
           {data.map((item) => (
-            <li key={item.id} className="glass-card flex items-center justify-between px-5 py-4">
-              <div>
-                <p className="font-medium">
+            <ListRow
+              key={item.id}
+              title={
+                <>
                   {item.name} {item.ticker ? `(${item.ticker})` : ''}
-                </p>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  {item.quantity} un · média {formatCurrency(item.averagePrice, item.currency)}
-                </p>
-              </div>
-              <Button variant="danger" onClick={() => removeMutation.mutate(item.id)}>
-                Remover
-              </Button>
-            </li>
+                </>
+              }
+              subtitle={`${item.quantity} un · média ${formatCurrency(item.averagePrice, item.currency)}`}
+              trailing={
+                <Button
+                  variant="danger"
+                  className="w-full sm:w-auto"
+                  onClick={() => removeMutation.mutate(item.id)}
+                >
+                  Remover
+                </Button>
+              }
+            />
           ))}
         </ul>
       )}

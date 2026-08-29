@@ -9,8 +9,8 @@ export function HomeLayout() {
   const { session, loading } = useAuthStore();
 
   return (
-    <div className="mx-auto min-h-screen max-w-6xl px-4 py-6 md:px-6">
-      <header className="mb-10 flex flex-wrap items-center justify-between gap-4">
+    <div className="mx-auto min-h-screen max-w-6xl px-4 py-4 md:px-6 md:py-6">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-4 md:mb-10">
         <Link to="/" className="transition hover:opacity-90">
           <Logo size="md" />
         </Link>

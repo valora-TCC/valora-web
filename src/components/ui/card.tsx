@@ -10,7 +10,7 @@ export function Card({
 }: HTMLAttributes<HTMLDivElement> & { variant?: CardVariant }) {
   return (
     <div
-      className={cn(variant === 'gold' ? 'glass-card-gold' : 'glass-card', 'p-5', className)}
+      className={cn(variant === 'gold' ? 'glass-card-gold' : 'glass-card', 'p-4 sm:p-5', className)}
       {...props}
     />
   );

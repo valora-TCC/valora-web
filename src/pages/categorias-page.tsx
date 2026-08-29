@@ -8,6 +8,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { ListRow } from '@/components/ui/list-row';
 
 const DEFAULT_COLOR = '#00C978';
 
@@ -52,7 +53,7 @@ export function CategoriasPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Categorias" description="Organize receitas e despesas" />
 
       <Card>
@@ -67,8 +68,8 @@ export function CategoriasPage() {
             <option value="DESPESA">Despesa</option>
             <option value="RECEITA">Receita</option>
           </Select>
-          <Input type="color" className="h-10 p-1" {...register('cor')} />
-          <Button type="submit" disabled={isSubmitting || createMutation.isPending}>
+          <Input type="color" className="h-11 p-1" {...register('cor')} />
+          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting || createMutation.isPending}>
             Adicionar
           </Button>
           {createMutation.error && (
@@ -84,21 +85,28 @@ export function CategoriasPage() {
       ) : (
         <ul className="grid gap-3 sm:grid-cols-2">
           {data.map((categoria) => (
-            <li key={categoria.id} className="glass-card flex items-center justify-between px-5 py-4">
-              <div className="flex items-center gap-3">
-                <span
-                  className="h-3 w-3 rounded-full"
-                  style={{ background: categoria.cor ?? DEFAULT_COLOR }}
-                />
-                <div>
-                  <p className="font-medium">{categoria.nome}</p>
-                  <p className="text-sm text-[var(--color-text-muted)]">{categoria.tipo}</p>
-                </div>
-              </div>
-              <Button variant="danger" onClick={() => removeMutation.mutate(categoria.id)}>
-                Remover
-              </Button>
-            </li>
+            <ListRow
+              key={categoria.id}
+              title={
+                <span className="flex items-center gap-3">
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-full"
+                    style={{ background: categoria.cor ?? DEFAULT_COLOR }}
+                  />
+                  {categoria.nome}
+                </span>
+              }
+              subtitle={categoria.tipo}
+              trailing={
+                <Button
+                  variant="danger"
+                  className="w-full sm:w-auto"
+                  onClick={() => removeMutation.mutate(categoria.id)}
+                >
+                  Remover
+                </Button>
+              }
+            />
           ))}
         </ul>
       )}

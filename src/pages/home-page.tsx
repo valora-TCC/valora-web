@@ -34,8 +34,8 @@ export function HomePage() {
   });
 
   return (
-    <div className="space-y-16 pb-16">
-      <section className="relative overflow-hidden rounded-3xl border border-[var(--color-line)] px-6 py-14 md:px-12 md:py-20">
+    <div className="space-y-10 pb-10 md:space-y-16 md:pb-16">
+      <section className="relative overflow-hidden rounded-2xl border border-[var(--color-line)] px-4 py-10 sm:rounded-3xl sm:px-6 sm:py-14 md:px-12 md:py-20">
         <div
           className="pointer-events-none absolute inset-0 -z-10"
           style={{
@@ -44,7 +44,7 @@ export function HomePage() {
           }}
         />
         <Logo size="lg" />
-        <h1 className="mt-8 max-w-xl font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--color-text)] md:text-5xl">
+        <h1 className="mt-6 max-w-xl font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--color-text)] sm:mt-8 sm:text-3xl md:text-5xl">
           Mercado ao vivo. Finanças sob controle.
         </h1>
         <p className="mt-4 max-w-lg text-base text-[var(--color-text-muted)] md:text-lg">
@@ -76,16 +76,16 @@ export function HomePage() {
       </section>
 
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="min-w-0">
             <p className="text-xs font-medium tracking-[0.2em] text-[var(--color-gold)] uppercase">
               Cotações
             </p>
-            <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold">
+            <h2 className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold sm:text-2xl">
               Moedas e Bitcoin
             </h2>
           </div>
-          <TrendingUp className="text-[var(--color-emerald)]/70" size={22} strokeWidth={1.5} />
+          <TrendingUp className="shrink-0 text-[var(--color-emerald)]/70" size={22} strokeWidth={1.5} />
         </div>
 
         {isLoading && <p className="text-sm text-[var(--color-text-muted)]">Carregando cotações...</p>}
@@ -108,7 +108,7 @@ export function HomePage() {
                       {moeda.codigo}
                     </span>
                   </div>
-                  <p className="text-2xl font-semibold tracking-tight">
+                  <p className="text-xl font-semibold tracking-tight sm:text-2xl">
                     {formatCurrency(moeda.taxaParaReal)}
                   </p>
                   {pct && (
@@ -138,7 +138,7 @@ export function HomePage() {
           <p className="text-xs font-medium tracking-[0.2em] text-[var(--color-gold)] uppercase">
             Taxas
           </p>
-          <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold">
+          <h2 className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold sm:text-2xl">
             SELIC, CDI e CDB
           </h2>
           <p className="mt-1 text-sm text-[var(--color-text-muted)]">
@@ -155,7 +155,7 @@ export function HomePage() {
                 </p>
                 <p
                   className={cn(
-                    'mt-2 text-2xl font-semibold tracking-tight',
+                    'mt-2 text-xl font-semibold tracking-tight sm:text-2xl',
                     taxa.nome === 'SELIC' ? 'text-[var(--color-gold-light)]' : 'text-[var(--color-text)]',
                   )}
                 >
@@ -176,16 +176,16 @@ export function HomePage() {
       </section>
 
       <section className="space-y-4">
-        <div className="flex items-end justify-between gap-4">
-          <div>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="min-w-0">
             <p className="text-xs font-medium tracking-[0.2em] text-[var(--color-gold)] uppercase">
               Notícias
             </p>
-            <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-semibold">
+            <h2 className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold sm:text-2xl">
               Financeiro em destaque
             </h2>
           </div>
-          <Newspaper className="text-[var(--color-emerald)]/70" size={22} strokeWidth={1.5} />
+          <Newspaper className="shrink-0 text-[var(--color-emerald)]/70" size={22} strokeWidth={1.5} />
         </div>
 
         {data && (
@@ -196,7 +196,7 @@ export function HomePage() {
                   href={noticia.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="glass-card group flex items-start justify-between gap-4 p-4 transition hover:border-[rgba(0,201,120,0.35)]"
+                  className="glass-card group flex flex-col gap-3 p-4 transition hover:border-[rgba(0,201,120,0.35)] sm:flex-row sm:items-start sm:justify-between sm:gap-4"
                 >
                   <div className="min-w-0 space-y-1">
                     <p className="font-medium text-[var(--color-text)] group-hover:text-[var(--color-emerald)]">
@@ -231,8 +231,8 @@ export function HomePage() {
         )}
       </section>
 
-      <section className="glass-card-gold px-6 py-10 text-center md:px-12">
-        <h2 className="font-[family-name:var(--font-display)] text-2xl font-semibold md:text-3xl">
+      <section className="glass-card-gold px-4 py-8 text-center sm:px-6 sm:py-10 md:px-12">
+        <h2 className="font-[family-name:var(--font-display)] text-xl font-semibold sm:text-2xl md:text-3xl">
           Organize suas finanças
         </h2>
         <p className="mx-auto mt-3 max-w-md text-sm text-[var(--color-text-muted)] md:text-base">

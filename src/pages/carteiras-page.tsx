@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ListRow } from '@/components/ui/list-row';
 
 const schema = z.object({
   nome: z.string().min(2),
@@ -51,7 +52,7 @@ export function CarteirasPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Carteiras" description="Saldos e contas financeiras" />
 
       <Card>
@@ -69,7 +70,7 @@ export function CarteirasPage() {
             placeholder="Saldo inicial"
             {...register('saldoAtual', { valueAsNumber: true })}
           />
-          <Button type="submit" disabled={isSubmitting || createMutation.isPending}>
+          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting || createMutation.isPending}>
             Adicionar
           </Button>
           {(errors.nome || createMutation.error) && (
@@ -85,22 +86,25 @@ export function CarteirasPage() {
       ) : (
         <ul className="space-y-3">
           {data.map((carteira) => (
-            <li key={carteira.id} className="glass-card flex items-center justify-between px-5 py-4">
-              <div>
-                <p className="font-medium">{carteira.nome}</p>
-                <p className="text-sm text-[var(--color-text-muted)]">
-                  {carteira.descricao || (carteira.ativo ? 'Ativa' : 'Inativa')}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <p className="text-lg font-semibold text-[var(--color-gold-light)]">
-                  {formatCurrency(carteira.saldoAtual)}
-                </p>
-                <Button variant="danger" onClick={() => removeMutation.mutate(carteira.id)}>
-                  Remover
-                </Button>
-              </div>
-            </li>
+            <ListRow
+              key={carteira.id}
+              title={carteira.nome}
+              subtitle={carteira.descricao || (carteira.ativo ? 'Ativa' : 'Inativa')}
+              trailing={
+                <>
+                  <p className="text-lg font-semibold text-[var(--color-gold-light)]">
+                    {formatCurrency(carteira.saldoAtual)}
+                  </p>
+                  <Button
+                    variant="danger"
+                    className="w-full sm:w-auto"
+                    onClick={() => removeMutation.mutate(carteira.id)}
+                  >
+                    Remover
+                  </Button>
+                </>
+              }
+            />
           ))}
         </ul>
       )}

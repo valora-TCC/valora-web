@@ -110,7 +110,7 @@ export function OrcamentosPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="page-stack">
       <PageHeader title="Orçamento" description="Limites mensais por categoria" />
 
       <Card>
@@ -136,7 +136,7 @@ export function OrcamentosPage() {
             {...createForm.register('valorTotal', { valueAsNumber: true })}
           />
           <Input placeholder="Observação" className="md:col-span-2" {...createForm.register('observacao')} />
-          <Button type="submit" disabled={createMutation.isPending}>
+          <Button type="submit" className="w-full md:w-auto" disabled={createMutation.isPending}>
             Criar orçamento
           </Button>
           {createMutation.error && (
@@ -176,7 +176,7 @@ export function OrcamentosPage() {
             placeholder="Limite"
             {...limiteForm.register('limite', { valueAsNumber: true })}
           />
-          <Button type="submit" disabled={limiteMutation.isPending}>
+          <Button type="submit" className="w-full md:w-auto" disabled={limiteMutation.isPending}>
             Definir limite
           </Button>
           {limiteMutation.error && (
@@ -192,16 +192,16 @@ export function OrcamentosPage() {
       ) : (
         <ul className="space-y-4">
           {data.map((orcamento) => (
-            <li key={orcamento.id} className="glass-card space-y-4 px-5 py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
+            <li key={orcamento.id} className="glass-card space-y-4 px-4 py-4 sm:px-5">
+              <div className="list-row items-start">
+                <div className="min-w-0 flex-1">
                   <p className="font-medium">{orcamento.nome}</p>
                   <p className="text-sm text-[var(--color-text-muted)]">
                     {months[orcamento.mes - 1]} {orcamento.ano} · gasto{' '}
                     {formatCurrency(orcamento.totalGasto)} de {formatCurrency(orcamento.valorTotal)}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
                   <span
                     className={
                       orcamento.status === 'ACIMA'
@@ -211,20 +211,25 @@ export function OrcamentosPage() {
                   >
                     {orcamento.status === 'ACIMA' ? 'Acima do limite' : 'Dentro do limite'}
                   </span>
-                  <Button variant="danger" onClick={() => removeMutation.mutate(orcamento.id)}>
+                  <Button
+                    variant="danger"
+                    className="w-full sm:w-auto"
+                    onClick={() => removeMutation.mutate(orcamento.id)}
+                  >
                     Remover
                   </Button>
                 </div>
               </div>
               <ul className="space-y-2">
                 {orcamento.categorias.map((item) => (
-                  <li key={item.id} className="flex items-center justify-between gap-3 text-sm">
-                    <span>
+                  <li key={item.id} className="list-row text-sm">
+                    <span className="min-w-0 truncate">
                       {item.categoria?.nome ?? 'Categoria'} · {formatCurrency(item.valorGasto)} /{' '}
                       {formatCurrency(item.limite)} ({item.percentual}%)
                     </span>
                     <Button
                       variant="danger"
+                      className="w-full sm:w-auto"
                       onClick={() =>
                         removeCategoriaMutation.mutate({
                           id: orcamento.id,
