@@ -9,7 +9,9 @@ export function AuthLayout() {
       <div className="relative w-full max-w-md min-w-0">
         <div
           className="pointer-events-none absolute inset-0 -z-10 rounded-[2rem] blur-3xl"
-          style={{ background: 'radial-gradient(circle, var(--color-glow-emerald), transparent 70%)' }}
+          style={{
+            background: 'radial-gradient(circle, var(--color-glow-emerald), transparent 70%)',
+          }}
         />
         <div className="glass-card glow-emerald p-6 sm:p-8">
           <Link to="/" className="inline-block transition hover:opacity-90">

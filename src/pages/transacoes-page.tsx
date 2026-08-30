@@ -25,7 +25,10 @@ type FormData = z.infer<typeof schema>;
 
 export function TransacoesPage() {
   const queryClient = useQueryClient();
-  const { data: carteiras = [] } = useQuery({ queryKey: ['carteiras'], queryFn: carteirasApi.list });
+  const { data: carteiras = [] } = useQuery({
+    queryKey: ['carteiras'],
+    queryFn: carteirasApi.list,
+  });
   const { data: categorias = [] } = useQuery({
     queryKey: ['categorias'],
     queryFn: categoriasApi.list,
@@ -149,7 +152,9 @@ export function TransacoesPage() {
                 <>
                   <p
                     className={
-                      tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                      tx.tipo === 'DESPESA'
+                        ? 'text-[var(--color-expense)]'
+                        : 'text-[var(--color-income)]'
                     }
                   >
                     {formatCurrency(tx.valor)}

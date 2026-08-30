@@ -59,9 +59,7 @@ export function CategoriasPage() {
       <Card>
         <form
           className="grid gap-3 md:grid-cols-4"
-          onSubmit={(e) =>
-            void handleSubmit((values) => createMutation.mutateAsync(values))(e)
-          }
+          onSubmit={(e) => void handleSubmit((values) => createMutation.mutateAsync(values))(e)}
         >
           <Input placeholder="Nome" {...register('nome')} />
           <Select {...register('tipo')}>
@@ -69,7 +67,11 @@ export function CategoriasPage() {
             <option value="RECEITA">Receita</option>
           </Select>
           <Input type="color" className="h-11 p-1" {...register('cor')} />
-          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting || createMutation.isPending}>
+          <Button
+            type="submit"
+            className="w-full md:w-auto"
+            disabled={isSubmitting || createMutation.isPending}
+          >
             Adicionar
           </Button>
           {createMutation.error && (
