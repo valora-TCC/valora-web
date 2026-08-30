@@ -36,8 +36,8 @@ export function AppNavLinks({ onNavigate }: { onNavigate?: () => void }) {
             cn(
               'flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm transition',
               isActive
-                ? 'border-l-2 border-[var(--color-gold)] bg-[rgba(0,201,120,0.12)] text-[var(--color-emerald)]'
-                : 'border-l-2 border-transparent text-[var(--color-text-muted)] hover:bg-[rgba(6,61,50,0.55)] hover:text-[var(--color-text)]',
+                ? 'border-l-2 border-[var(--color-gold)] bg-[var(--color-nav-active-bg)] text-[var(--color-emerald)]'
+                : 'border-l-2 border-transparent text-[var(--color-text-muted)] hover:bg-[var(--color-nav-hover-bg)] hover:text-[var(--color-text)]',
             )
           }
         >

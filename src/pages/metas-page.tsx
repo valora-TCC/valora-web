@@ -168,7 +168,7 @@ export function MetasPage() {
                   Remover
                 </Button>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-[rgba(6,61,50,0.55)]">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-progress-bg)]">
                 <div
                   className="h-full rounded-full bg-[var(--color-emerald)]"
                   style={{ width: `${Math.min(meta.percentual, 100)}%` }}

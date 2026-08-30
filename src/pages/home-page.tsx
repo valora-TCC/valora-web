@@ -38,10 +38,7 @@ export function HomePage() {
       <section className="relative overflow-hidden rounded-2xl border border-[var(--color-line)] px-4 py-10 sm:rounded-3xl sm:px-6 sm:py-14 md:px-12 md:py-20">
         <div
           className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              'radial-gradient(ellipse at 15% 20%, rgba(0,201,120,0.16), transparent 55%), radial-gradient(ellipse at 85% 80%, rgba(217,164,65,0.1), transparent 45%)',
-          }}
+          style={{ background: 'var(--color-hero-gradient)' }}
         />
         <Logo size="lg" />
         <h1 className="mt-6 max-w-xl font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--color-text)] sm:mt-8 sm:text-3xl md:text-5xl">
@@ -196,7 +193,7 @@ export function HomePage() {
                   href={noticia.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="glass-card group flex flex-col gap-3 p-4 transition hover:border-[rgba(0,201,120,0.35)] sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                  className="glass-card group flex flex-col gap-3 p-4 transition hover:border-[var(--color-card-hover-border)] sm:flex-row sm:items-start sm:justify-between sm:gap-4"
                 >
                   <div className="min-w-0 space-y-1">
                     <p className="font-medium text-[var(--color-text)] group-hover:text-[var(--color-emerald)]">

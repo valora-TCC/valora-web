@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Logo } from '@/components/brand/logo';
 import { AppNavLinks } from '@/components/layout/app-nav-links';
 import { MobileNavDrawer } from '@/components/layout/mobile-nav-drawer';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export function AppLayout() {
   const [navOpen, setNavOpen] = useState(false);
@@ -37,6 +38,7 @@ export function AppLayout() {
           <nav className="space-y-1">
             <AppNavLinks />
           </nav>
+          <ThemeToggle className="w-full justify-start" />
           <button
             type="button"
             onClick={() => void supabase.auth.signOut()}
