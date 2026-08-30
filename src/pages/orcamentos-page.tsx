@@ -128,14 +128,22 @@ export function OrcamentosPage() {
               </option>
             ))}
           </Select>
-          <Input type="number" placeholder="Ano" {...createForm.register('ano', { valueAsNumber: true })} />
+          <Input
+            type="number"
+            placeholder="Ano"
+            {...createForm.register('ano', { valueAsNumber: true })}
+          />
           <Input
             type="number"
             step="0.01"
             placeholder="Valor total"
             {...createForm.register('valorTotal', { valueAsNumber: true })}
           />
-          <Input placeholder="Observação" className="md:col-span-2" {...createForm.register('observacao')} />
+          <Input
+            placeholder="Observação"
+            className="md:col-span-2"
+            {...createForm.register('observacao')}
+          />
           <Button type="submit" className="w-full md:w-auto" disabled={createMutation.isPending}>
             Criar orçamento
           </Button>

@@ -38,7 +38,9 @@ export function LoginPage() {
       <div>
         <label className="text-sm font-medium text-[var(--color-text)]">E-mail</label>
         <Input className="mt-1" type="email" {...register('email')} />
-        {errors.email && <p className="mt-1 text-sm text-[var(--color-danger)]">{errors.email.message}</p>}
+        {errors.email && (
+          <p className="mt-1 text-sm text-[var(--color-danger)]">{errors.email.message}</p>
+        )}
       </div>
       <div>
         <label className="text-sm font-medium text-[var(--color-text)]">Senha</label>

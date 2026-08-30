@@ -1,14 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
@@ -81,10 +73,18 @@ export function DashboardPage() {
                     layout={isMobile ? 'vertical' : 'horizontal'}
                     margin={isMobile ? { left: 8, right: 8 } : undefined}
                   >
-                    <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid
+                      stroke={chartColors.grid}
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
                     {isMobile ? (
                       <>
-                        <XAxis type="number" tick={{ fontSize: 10, fill: chartColors.tick }} axisLine={false} />
+                        <XAxis
+                          type="number"
+                          tick={{ fontSize: 10, fill: chartColors.tick }}
+                          axisLine={false}
+                        />
                         <YAxis
                           type="category"
                           dataKey="name"
@@ -136,7 +136,9 @@ export function DashboardPage() {
                   trailing={
                     <p
                       className={
-                        tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                        tx.tipo === 'DESPESA'
+                          ? 'text-[var(--color-expense)]'
+                          : 'text-[var(--color-income)]'
                       }
                     >
                       {tx.tipo === 'DESPESA' ? '-' : '+'}

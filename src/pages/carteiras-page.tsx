@@ -58,9 +58,7 @@ export function CarteirasPage() {
       <Card>
         <form
           className="grid gap-3 md:grid-cols-4"
-          onSubmit={(e) =>
-            void handleSubmit((values) => createMutation.mutateAsync(values))(e)
-          }
+          onSubmit={(e) => void handleSubmit((values) => createMutation.mutateAsync(values))(e)}
         >
           <Input placeholder="Nome" {...register('nome')} />
           <Input placeholder="Descrição" {...register('descricao')} />
@@ -70,7 +68,11 @@ export function CarteirasPage() {
             placeholder="Saldo inicial"
             {...register('saldoAtual', { valueAsNumber: true })}
           />
-          <Button type="submit" className="w-full md:w-auto" disabled={isSubmitting || createMutation.isPending}>
+          <Button
+            type="submit"
+            className="w-full md:w-auto"
+            disabled={isSubmitting || createMutation.isPending}
+          >
             Adicionar
           </Button>
           {(errors.nome || createMutation.error) && (

@@ -14,10 +14,7 @@ export function PageHeader({
 }) {
   return (
     <header
-      className={cn(
-        'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between',
-        className,
-      )}
+      className={cn('flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between', className)}
     >
       <div className="min-w-0">
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--color-text)] sm:text-3xl md:text-4xl">

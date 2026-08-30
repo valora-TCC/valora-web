@@ -36,7 +36,12 @@ export function MobileNavDrawer({ open, onClose }: MobileNavDrawerProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+    <div
+      className="fixed inset-0 z-50 md:hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu de navegação"
+    >
       <button
         type="button"
         className="absolute inset-0 bg-[var(--color-overlay)] backdrop-blur-sm"
@@ -46,7 +51,7 @@ export function MobileNavDrawer({ open, onClose }: MobileNavDrawerProps) {
       <aside
         ref={panelRef}
         tabIndex={-1}
-        className="absolute top-0 left-0 flex h-full w-[min(100%,18rem)] flex-col gap-6 overflow-y-auto border-r border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-2xl"
+        className="absolute top-0 left-0 flex h-full w-[min(100%,18rem)] flex-col gap-6 overflow-y-auto border-r border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-[var(--color-shadow)]"
       >
         <div className="flex items-start justify-between gap-3">
           <div>

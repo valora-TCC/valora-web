@@ -98,7 +98,11 @@ export function MetasPage() {
             placeholder="Valor objetivo"
             {...createForm.register('valorObjetivo', { valueAsNumber: true })}
           />
-          <Input placeholder="Descrição" className="md:col-span-3" {...createForm.register('descricao')} />
+          <Input
+            placeholder="Descrição"
+            className="md:col-span-3"
+            {...createForm.register('descricao')}
+          />
           <Input type="date" {...createForm.register('dataInicio')} />
           <Input type="date" {...createForm.register('dataFim')} />
           <Button type="submit" className="w-full md:w-auto" disabled={createMutation.isPending}>
