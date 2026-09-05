@@ -1,34 +1,20 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { useChartTheme } from '@/hooks/use-chart-theme';
 import { PageHeader } from '@/components/ui/page-header';
 import { StatCard } from '@/components/ui/stat-card';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ListRow } from '@/components/ui/list-row';
 
-const chartColors = {
-  grid: '#063D32',
-  tick: '#8A9A94',
-  bar: '#00C978',
-  tooltipBg: '#031C17',
-  tooltipBorder: 'rgba(0, 201, 120, 0.15)',
-};
-
 export function DashboardPage() {
   const isMobile = useMediaQuery('(max-width: 639px)');
+  const chartColors = useChartTheme();
   const [from, setFrom] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
 
@@ -68,7 +54,7 @@ export function DashboardPage() {
 
       {data && (
         <>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label="Saldo" value={formatCurrency(data.totals.balance)} highlight />
             <StatCard label="Receitas" value={formatCurrency(data.totals.income)} />
             <StatCard label="Despesas" value={formatCurrency(data.totals.expense)} />
@@ -87,10 +73,18 @@ export function DashboardPage() {
                     layout={isMobile ? 'vertical' : 'horizontal'}
                     margin={isMobile ? { left: 8, right: 8 } : undefined}
                   >
-                    <CartesianGrid stroke={chartColors.grid} strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid
+                      stroke={chartColors.grid}
+                      strokeDasharray="3 3"
+                      vertical={false}
+                    />
                     {isMobile ? (
                       <>
-                        <XAxis type="number" tick={{ fontSize: 10, fill: chartColors.tick }} axisLine={false} />
+                        <XAxis
+                          type="number"
+                          tick={{ fontSize: 10, fill: chartColors.tick }}
+                          axisLine={false}
+                        />
                         <YAxis
                           type="category"
                           dataKey="name"
@@ -119,7 +113,7 @@ export function DashboardPage() {
                         background: chartColors.tooltipBg,
                         border: `1px solid ${chartColors.tooltipBorder}`,
                         borderRadius: 12,
-                        color: '#F4F5F2',
+                        color: chartColors.tooltipText,
                       }}
                     />
                     <Bar dataKey="amount" fill={chartColors.bar} radius={[8, 8, 0, 0]} />
@@ -142,7 +136,9 @@ export function DashboardPage() {
                   trailing={
                     <p
                       className={
-                        tx.tipo === 'DESPESA' ? 'text-[var(--color-expense)]' : 'text-[var(--color-income)]'
+                        tx.tipo === 'DESPESA'
+                          ? 'text-[var(--color-expense)]'
+                          : 'text-[var(--color-income)]'
                       }
                     >
                       {tx.tipo === 'DESPESA' ? '-' : '+'}

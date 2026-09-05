@@ -17,6 +17,7 @@ export type MarketTaxa = {
   fonte: string | null;
   dataAtualizacao: string;
   referencia: boolean;
+  periodo: 'aa' | 'mensal';
 };
 
 export type MarketNoticia = {
@@ -28,8 +29,9 @@ export type MarketNoticia = {
 };
 
 export type MarketSummary = {
-  moedas: MarketMoeda[];
-  taxas: MarketTaxa[];
+  cambio: { moedas: MarketMoeda[] };
+  cripto: { moedas: MarketMoeda[] };
+  taxas: { taxas: MarketTaxa[] };
   noticias: MarketNoticia[];
   atualizadoEm: string;
 };

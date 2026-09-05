@@ -3,6 +3,7 @@ import { LogOut, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Logo } from '@/components/brand/logo';
 import { AppNavLinks } from '@/components/layout/app-nav-links';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 type MobileNavDrawerProps = {
   open: boolean;
@@ -35,17 +36,22 @@ export function MobileNavDrawer({ open, onClose }: MobileNavDrawerProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Menu de navegação">
+    <div
+      className="fixed inset-0 z-50 md:hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu de navegação"
+    >
       <button
         type="button"
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-[var(--color-overlay)] backdrop-blur-sm"
         aria-label="Fechar menu"
         onClick={onClose}
       />
       <aside
         ref={panelRef}
         tabIndex={-1}
-        className="absolute top-0 left-0 flex h-full w-[min(100%,18rem)] flex-col gap-6 overflow-y-auto border-r border-[var(--color-line)] bg-[#021510] p-5 shadow-2xl"
+        className="absolute top-0 left-0 flex h-full w-[min(100%,18rem)] flex-col gap-6 overflow-y-auto border-r border-[var(--color-line)] bg-[var(--color-surface)] p-5 shadow-[var(--color-shadow)]"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -66,10 +72,11 @@ export function MobileNavDrawer({ open, onClose }: MobileNavDrawerProps) {
         <nav className="space-y-1">
           <AppNavLinks onNavigate={onClose} />
         </nav>
+        <ThemeToggle className="mt-auto w-full justify-start" />
         <button
           type="button"
           onClick={() => void supabase.auth.signOut()}
-          className="btn-ghost mt-auto w-full justify-start gap-2 px-3 py-2 text-sm"
+          className="btn-ghost w-full justify-start gap-2 px-3 py-2 text-sm"
         >
           <LogOut size={16} strokeWidth={1.5} />
           Sair

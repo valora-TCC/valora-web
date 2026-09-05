@@ -86,26 +86,30 @@ export function MetasPage() {
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-3"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           onSubmit={(e) =>
             void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
           }
         >
-          <Input placeholder="Nome" className="md:col-span-2" {...createForm.register('nome')} />
+          <Input placeholder="Nome" className="sm:col-span-2" {...createForm.register('nome')} />
           <Input
             type="number"
             step="0.01"
             placeholder="Valor objetivo"
             {...createForm.register('valorObjetivo', { valueAsNumber: true })}
           />
-          <Input placeholder="Descrição" className="md:col-span-3" {...createForm.register('descricao')} />
+          <Input
+            placeholder="Descrição"
+            className="sm:col-span-2"
+            {...createForm.register('descricao')}
+          />
           <Input type="date" {...createForm.register('dataInicio')} />
           <Input type="date" {...createForm.register('dataFim')} />
-          <Button type="submit" className="w-full md:w-auto" disabled={createMutation.isPending}>
+          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={createMutation.isPending}>
             Criar meta
           </Button>
           {createMutation.error && (
-            <p className="md:col-span-3 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3">
               {getErrorMessage(createMutation.error)}
             </p>
           )}
@@ -114,7 +118,7 @@ export function MetasPage() {
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-4"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) =>
             void progressoForm.handleSubmit((values) => progressoMutation.mutateAsync(values))(e)
           }
@@ -134,11 +138,11 @@ export function MetasPage() {
             {...progressoForm.register('valor', { valueAsNumber: true })}
           />
           <Input placeholder="Observação" {...progressoForm.register('observacao')} />
-          <Button type="submit" className="w-full md:w-auto" disabled={progressoMutation.isPending}>
+          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={progressoMutation.isPending}>
             Registrar progresso
           </Button>
           {progressoMutation.error && (
-            <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
               {getErrorMessage(progressoMutation.error)}
             </p>
           )}
@@ -168,7 +172,7 @@ export function MetasPage() {
                   Remover
                 </Button>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-[rgba(6,61,50,0.55)]">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-progress-bg)]">
                 <div
                   className="h-full rounded-full bg-[var(--color-emerald)]"
                   style={{ width: `${Math.min(meta.percentual, 100)}%` }}

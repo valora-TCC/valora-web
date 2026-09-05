@@ -14,10 +14,7 @@ export function PageHeader({
 }) {
   return (
     <header
-      className={cn(
-        'flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between',
-        className,
-      )}
+      className={cn('flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between', className)}
     >
       <div className="min-w-0">
         <h1 className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--color-text)] sm:text-3xl md:text-4xl">
@@ -28,7 +25,9 @@ export function PageHeader({
         )}
       </div>
       {children && (
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">{children}</div>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
+          {children}
+        </div>
       )}
     </header>
   );

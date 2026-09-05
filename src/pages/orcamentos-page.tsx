@@ -115,12 +115,12 @@ export function OrcamentosPage() {
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-4"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) =>
             void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
           }
         >
-          <Input placeholder="Nome" className="md:col-span-2" {...createForm.register('nome')} />
+          <Input placeholder="Nome" className="sm:col-span-2" {...createForm.register('nome')} />
           <Select {...createForm.register('mes', { valueAsNumber: true })}>
             {months.map((label, index) => (
               <option key={label} value={index + 1}>
@@ -128,19 +128,27 @@ export function OrcamentosPage() {
               </option>
             ))}
           </Select>
-          <Input type="number" placeholder="Ano" {...createForm.register('ano', { valueAsNumber: true })} />
+          <Input
+            type="number"
+            placeholder="Ano"
+            {...createForm.register('ano', { valueAsNumber: true })}
+          />
           <Input
             type="number"
             step="0.01"
             placeholder="Valor total"
             {...createForm.register('valorTotal', { valueAsNumber: true })}
           />
-          <Input placeholder="Observação" className="md:col-span-2" {...createForm.register('observacao')} />
-          <Button type="submit" className="w-full md:w-auto" disabled={createMutation.isPending}>
+          <Input
+            placeholder="Observação"
+            className="sm:col-span-2"
+            {...createForm.register('observacao')}
+          />
+          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={createMutation.isPending}>
             Criar orçamento
           </Button>
           {createMutation.error && (
-            <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
               {getErrorMessage(createMutation.error)}
             </p>
           )}
@@ -149,7 +157,7 @@ export function OrcamentosPage() {
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-4"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) =>
             void limiteForm.handleSubmit((values) => limiteMutation.mutateAsync(values))(e)
           }
@@ -176,11 +184,11 @@ export function OrcamentosPage() {
             placeholder="Limite"
             {...limiteForm.register('limite', { valueAsNumber: true })}
           />
-          <Button type="submit" className="w-full md:w-auto" disabled={limiteMutation.isPending}>
+          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={limiteMutation.isPending}>
             Definir limite
           </Button>
           {limiteMutation.error && (
-            <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
               {getErrorMessage(limiteMutation.error)}
             </p>
           )}

@@ -134,11 +134,11 @@ export function InvestmentsPage() {
             placeholder="Preço"
             {...txForm.register('unitPrice', { valueAsNumber: true })}
           />
-          <Button type="submit" className="w-full sm:col-span-2 xl:col-span-1 xl:w-auto">
+          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 xl:w-auto">
             Registrar movimento
           </Button>
           {txMutation.error && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] xl:col-span-5">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3 xl:col-span-5">
               {getErrorMessage(txMutation.error)}
             </p>
           )}
