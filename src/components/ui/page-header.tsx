@@ -25,7 +25,9 @@ export function PageHeader({
         )}
       </div>
       {children && (
-        <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:justify-end">{children}</div>
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
+          {children}
+        </div>
       )}
     </header>
   );

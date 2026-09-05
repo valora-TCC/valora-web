@@ -14,7 +14,7 @@ type HomeMarketGridProps = {
 
 export function HomeMarketGrid({ data, loading, error, onRetry }: HomeMarketGridProps) {
   return (
-    <section aria-label="Mercado e notícias">
+    <section id="mercado" aria-label="Mercado e notícias">
       {error && (
         <div
           className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[var(--color-danger)]/30 bg-[var(--color-danger-hover-bg)] px-4 py-3"
@@ -29,13 +29,13 @@ export function HomeMarketGrid({ data, loading, error, onRetry }: HomeMarketGrid
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
-        <aside className="home-panel-sticky space-y-6">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:items-start lg:gap-8">
+        <aside className="home-panel-sticky min-w-0 space-y-6">
           <MarketQuotesPanel moedas={data?.cambio.moedas} loading={loading && !data} />
           <MarketCryptoPanel moedas={data?.cripto.moedas} loading={loading && !data} />
         </aside>
 
-        <section className="space-y-6">
+        <section className="min-w-0 space-y-6">
           <NewsPanel
             noticias={data?.noticias}
             updatedAt={data?.atualizadoEm}

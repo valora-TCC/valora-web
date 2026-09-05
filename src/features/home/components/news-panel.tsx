@@ -18,7 +18,7 @@ export function NewsPanel({ noticias, updatedAt, loading }: NewsPanelProps) {
   const { visible, expanded, hiddenCount, toggle } = useShowMore(noticias);
 
   return (
-    <Card className="flex h-full flex-col space-y-4">
+    <Card className="flex min-w-0 flex-col space-y-4">
       <SectionHeading label="Notícias" title="Financeiro em destaque" icon={Newspaper} />
 
       {!loading && <MarketStatusBar updatedAt={updatedAt} newsCount={noticias?.length} />}
@@ -30,8 +30,8 @@ export function NewsPanel({ noticias, updatedAt, loading }: NewsPanelProps) {
           <ul
             className={
               expanded
-                ? 'home-news-feed -mx-1 space-y-2 px-1'
-                : 'home-news-feed -mx-1 max-h-[32rem] space-y-2 overflow-y-auto px-1'
+                ? 'home-news-feed space-y-2'
+                : 'home-news-feed space-y-2 sm:max-h-[32rem] sm:overflow-y-auto'
             }
           >
             {visible.map((noticia) => (

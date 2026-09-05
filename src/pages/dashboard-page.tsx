@@ -54,7 +54,7 @@ export function DashboardPage() {
 
       {data && (
         <>
-          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard label="Saldo" value={formatCurrency(data.totals.balance)} highlight />
             <StatCard label="Receitas" value={formatCurrency(data.totals.income)} />
             <StatCard label="Despesas" value={formatCurrency(data.totals.expense)} />

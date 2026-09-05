@@ -17,7 +17,7 @@ export function MarketCryptoPanel({ moedas, loading }: MarketCryptoPanelProps) {
   const { visible, expanded, hiddenCount, toggle } = useShowMore(moedas);
 
   return (
-    <Card className="space-y-4">
+    <Card className="min-w-0 space-y-4">
       <SectionHeading
         label="Investimentos"
         title="Investimentos e criptomoedas"

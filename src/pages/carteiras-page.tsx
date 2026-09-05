@@ -57,7 +57,7 @@ export function CarteirasPage() {
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-4"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
           onSubmit={(e) => void handleSubmit((values) => createMutation.mutateAsync(values))(e)}
         >
           <Input placeholder="Nome" {...register('nome')} />
@@ -70,13 +70,13 @@ export function CarteirasPage() {
           />
           <Button
             type="submit"
-            className="w-full md:w-auto"
+            className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto"
             disabled={isSubmitting || createMutation.isPending}
           >
             Adicionar
           </Button>
           {(errors.nome || createMutation.error) && (
-            <p className="md:col-span-4 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
               {errors.nome?.message ?? getErrorMessage(createMutation.error)}
             </p>
           )}
@@ -94,7 +94,7 @@ export function CarteirasPage() {
               subtitle={carteira.descricao || (carteira.ativo ? 'Ativa' : 'Inativa')}
               trailing={
                 <>
-                  <p className="text-lg font-semibold text-[var(--color-gold-light)]">
+                  <p className="shrink-0 text-lg font-semibold text-[var(--color-gold-light)]">
                     {formatCurrency(carteira.saldoAtual)}
                   </p>
                   <Button

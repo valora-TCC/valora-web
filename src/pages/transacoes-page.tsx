@@ -86,7 +86,7 @@ export function TransacoesPage() {
 
       <Card>
         <form
-          className="grid gap-3 md:grid-cols-3"
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
           onSubmit={(e) =>
             void handleSubmit(async (values) => {
               await createMutation.mutateAsync({
@@ -96,7 +96,7 @@ export function TransacoesPage() {
             })(e)
           }
         >
-          <Input placeholder="Descrição" className="md:col-span-2" {...register('descricao')} />
+          <Input placeholder="Descrição" className="sm:col-span-2" {...register('descricao')} />
           <Input
             type="number"
             step="0.01"
@@ -126,13 +126,13 @@ export function TransacoesPage() {
           <Input type="datetime-local" {...register('dataTransacao')} />
           <Button
             type="submit"
-            className="w-full md:col-span-2 md:w-auto"
+            className="w-full sm:col-span-2 lg:w-auto"
             disabled={isSubmitting || createMutation.isPending}
           >
             Registrar
           </Button>
           {createMutation.error && (
-            <p className="md:col-span-3 text-sm text-[var(--color-danger)]">
+            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3">
               {getErrorMessage(createMutation.error)}
             </p>
           )}
@@ -151,11 +151,11 @@ export function TransacoesPage() {
               trailing={
                 <>
                   <p
-                    className={
+                    className={`shrink-0 ${
                       tx.tipo === 'DESPESA'
                         ? 'text-[var(--color-expense)]'
                         : 'text-[var(--color-income)]'
-                    }
+                    }`}
                   >
                     {formatCurrency(tx.valor)}
                   </p>

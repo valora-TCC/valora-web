@@ -8,8 +8,8 @@ type MarketMoedasTableProps = {
 
 export function MarketMoedasTable({ moedas }: MarketMoedasTableProps) {
   return (
-    <div className="overflow-x-auto">
-      <table className="market-table w-full text-sm">
+    <div className="overflow-x-clip min-w-0 max-w-full">
+      <table className="market-table w-full max-w-full text-sm">
         <thead>
           <tr>
             <th scope="col">Ativo</th>
@@ -27,13 +27,13 @@ export function MarketMoedasTable({ moedas }: MarketMoedasTableProps) {
             const up = (moeda.pctChange ?? 0) >= 0;
             return (
               <tr key={moeda.codigo}>
-                <td>
-                  <div className="flex flex-col">
-                    <span className="font-medium text-[var(--color-text)]">{moeda.codigo}</span>
-                    <span className="text-xs text-[var(--color-text-muted)]">{moeda.nome}</span>
+                <td className="min-w-0">
+                  <div className="flex min-w-0 flex-col">
+                    <span className="truncate font-medium text-[var(--color-text)]">{moeda.codigo}</span>
+                    <span className="truncate text-xs text-[var(--color-text-muted)]">{moeda.nome}</span>
                   </div>
                 </td>
-                <td className="text-right tabular-nums font-medium">
+                <td className="text-right tabular-nums font-medium break-all">
                   {formatCurrency(moeda.taxaParaReal)}
                 </td>
                 <td className="text-right tabular-nums">

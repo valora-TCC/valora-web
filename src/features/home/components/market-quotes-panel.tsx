@@ -16,7 +16,7 @@ export function MarketQuotesPanel({ moedas, loading }: MarketQuotesPanelProps) {
   const { visible, expanded, hiddenCount, toggle } = useShowMore(moedas);
 
   return (
-    <Card className="space-y-4">
+    <Card className="min-w-0 space-y-4">
       <SectionHeading
         label="Câmbio"
         title="Câmbio e moedas"

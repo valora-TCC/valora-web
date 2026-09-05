@@ -20,7 +20,11 @@ export function ListRow({
     <li className={cn(asCard && 'glass-card', 'list-row px-4 py-4 sm:px-5', className)}>
       <div className="min-w-0 flex-1">
         <div className="font-medium">{title}</div>
-        {subtitle && <p className="truncate text-sm text-[var(--color-text-muted)]">{subtitle}</p>}
+        {subtitle && (
+          <p className="line-clamp-2 text-sm text-[var(--color-text-muted)] sm:truncate">
+            {subtitle}
+          </p>
+        )}
         {children}
       </div>
       {trailing && (

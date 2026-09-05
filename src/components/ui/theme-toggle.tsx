@@ -19,7 +19,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label={isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro'}
     >
       {isDark ? <Sun size={16} strokeWidth={1.5} /> : <Moon size={16} strokeWidth={1.5} />}
-      {isDark ? 'Modo claro' : 'Modo escuro'}
+      <span className="hidden sm:inline">{isDark ? 'Modo claro' : 'Modo escuro'}</span>
     </button>
   );
 }

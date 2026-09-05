@@ -15,7 +15,7 @@ export function HomePage() {
   });
 
   return (
-    <div className="home-page space-y-10 pb-10 md:space-y-14 md:pb-16">
+    <div className="home-page w-full min-w-0 space-y-10 pb-10 md:space-y-14 md:pb-16">
       <HomeHero data={data} loading={isLoading} session={session} />
       <HomeMarketGrid
         data={data}

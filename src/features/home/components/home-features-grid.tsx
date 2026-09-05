@@ -42,7 +42,7 @@ export function HomeFeaturesGrid({ session }: HomeFeaturesGridProps) {
   const ctaPath = session ? '/dashboard' : '/register';
 
   return (
-    <section className="space-y-6">
+    <section id="recursos" className="space-y-6">
       <SectionHeading
         label="Produto"
         title="Tudo para organizar suas finanças"

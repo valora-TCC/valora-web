@@ -24,7 +24,7 @@ export function HomeHero({ data, loading, session }: HomeHeroProps) {
   const newsCount = data?.noticias.length ?? 0;
 
   return (
-    <section className="relative overflow-hidden rounded-2xl border border-[var(--color-line)] px-4 py-10 sm:rounded-3xl sm:px-6 sm:py-14 md:px-10 md:py-16">
+    <section className="relative min-w-0 overflow-hidden rounded-2xl border border-[var(--color-line)] px-4 py-8 sm:rounded-3xl sm:px-6 sm:py-14 md:px-10 md:py-16">
       <div
         className="pointer-events-none absolute inset-0 -z-10"
         style={{ background: 'var(--color-hero-gradient)' }}
@@ -39,22 +39,22 @@ export function HomeHero({ data, loading, session }: HomeHeroProps) {
             Acompanhe cotações, taxas e notícias sem login. Para carteiras, metas e orçamentos,
             entre na sua conta Valora.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             {session ? (
-              <Link to="/dashboard">
-                <Button type="button" className="px-6 py-3">
+              <Link to="/dashboard" className="w-full sm:w-auto">
+                <Button type="button" className="w-full px-6 py-3 sm:w-auto">
                   Abrir dashboard
                 </Button>
               </Link>
             ) : (
               <>
-                <Link to="/register">
-                  <Button type="button" className="px-6 py-3">
+                <Link to="/register" className="w-full sm:w-auto">
+                  <Button type="button" className="w-full px-6 py-3 sm:w-auto">
                     Começar grátis
                   </Button>
                 </Link>
-                <Link to="/login">
-                  <Button type="button" variant="ghost" className="px-6 py-3">
+                <Link to="/login" className="w-full sm:w-auto">
+                  <Button type="button" variant="ghost" className="w-full px-6 py-3 sm:w-auto">
                     Já tenho conta
                   </Button>
                 </Link>
