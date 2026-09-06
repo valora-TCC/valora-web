@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
@@ -10,6 +12,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ListRow } from '@/components/ui/list-row';
+import { EmptyState } from '@/components/ui/empty-state';
+import { FormSection, Field } from '@/components/ui/form-section';
 
 const schema = z.object({
   nome: z.string().min(2),
@@ -21,6 +25,7 @@ type FormData = z.infer<typeof schema>;
 
 export function CarteirasPage() {
   const queryClient = useQueryClient();
+  const [nextHint, setNextHint] = useState(false);
   const { data = [], isLoading } = useQuery({
     queryKey: ['carteiras'],
     queryFn: carteirasApi.list,
@@ -39,8 +44,10 @@ export function CarteirasPage() {
   const createMutation = useMutation({
     mutationFn: (values: FormData) => carteirasApi.create(values),
     onSuccess: async () => {
+      const wasEmpty = data.length === 0;
       reset({ nome: '', descricao: '', saldoAtual: 0 });
       await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
+      if (wasEmpty) setNextHint(true);
     },
   });
 
@@ -53,38 +60,76 @@ export function CarteirasPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader title="Carteiras" description="Saldos e contas financeiras" />
+      <PageHeader
+        title="Carteiras"
+        description="Primeiro passo: onde está o seu dinheiro (conta, cartão ou dinheiro em espécie)."
+      />
+
+      {nextHint && (
+        <Card className="border border-[var(--color-emerald)]/30">
+          <p className="text-sm text-[var(--color-text)]">
+            Carteira criada. Próximo passo:{' '}
+            <Link
+              to="/categorias"
+              className="font-medium text-[var(--color-emerald)] underline-offset-2 hover:underline"
+            >
+              criar categorias de receita e despesa
+            </Link>
+            .
+          </p>
+        </Card>
+      )}
 
       <Card>
-        <form
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          onSubmit={(e) => void handleSubmit((values) => createMutation.mutateAsync(values))(e)}
+        <FormSection
+          title="Nova carteira"
+          description="Crie uma conta onde o dinheiro entra e sai. O saldo inicial é o valor que você já tem hoje."
         >
-          <Input placeholder="Nome" {...register('nome')} />
-          <Input placeholder="Descrição" {...register('descricao')} />
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Saldo inicial"
-            {...register('saldoAtual', { valueAsNumber: true })}
-          />
-          <Button
-            type="submit"
-            className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto"
-            disabled={isSubmitting || createMutation.isPending}
+          <form
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            onSubmit={(e) => void handleSubmit((values) => createMutation.mutateAsync(values))(e)}
           >
-            Adicionar
-          </Button>
-          {(errors.nome || createMutation.error) && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
-              {errors.nome?.message ?? getErrorMessage(createMutation.error)}
-            </p>
-          )}
-        </form>
+            <Field label="Nome" className="sm:col-span-1">
+              <Input placeholder="Ex.: Conta corrente" {...register('nome')} />
+            </Field>
+            <Field label="Descrição" hint="Opcional">
+              <Input placeholder="Ex.: Nubank" {...register('descricao')} />
+            </Field>
+            <Field
+              label="Saldo inicial"
+              hint="Quanto você tem nesta conta agora"
+            >
+              <Input
+                type="number"
+                step="0.01"
+                {...register('saldoAtual', { valueAsNumber: true })}
+              />
+            </Field>
+            <div className="flex items-end">
+              <Button
+                type="submit"
+                className="w-full lg:w-auto"
+                disabled={isSubmitting || createMutation.isPending}
+              >
+                Adicionar carteira
+              </Button>
+            </div>
+            {(errors.nome || createMutation.error) && (
+              <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
+                {errors.nome?.message ?? getErrorMessage(createMutation.error)}
+              </p>
+            )}
+          </form>
+        </FormSection>
       </Card>
 
       {isLoading ? (
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
+      ) : data.length === 0 ? (
+        <EmptyState
+          title="Nenhuma carteira ainda"
+          description="Comece criando pelo menos uma carteira. Depois você organiza categorias e registra transações."
+        />
       ) : (
         <ul className="space-y-3">
           {data.map((carteira) => (
