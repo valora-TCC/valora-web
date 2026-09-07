@@ -17,6 +17,8 @@ import { TransacoesPage } from '@/pages/transacoes-page';
 import { MetasPage } from '@/pages/metas-page';
 import { OrcamentosPage } from '@/pages/orcamentos-page';
 import { InvestmentsPage } from '@/pages/investments-page';
+import { EducacaoPage, EducacaoDetailPage } from '@/pages/educacao-page';
+import { SimulacoesPage } from '@/pages/simulacoes-page';
 import { HelpLayout } from '@/features/help/components/help-layout';
 import {
   HelpHubPage,
@@ -58,6 +60,10 @@ export default function App() {
                   <Route path="metas" element={<MetasPage />} />
                   <Route path="orcamentos" element={<OrcamentosPage />} />
                   <Route path="investments" element={<InvestmentsPage />} />
+                  <Route path="educacao" element={<EducacaoPage />} />
+                  <Route path="educacao/id/:id" element={<EducacaoDetailPage />} />
+                  <Route path="educacao/:slug" element={<EducacaoDetailPage />} />
+                  <Route path="simulacoes" element={<SimulacoesPage />} />
                   <Route path="ajuda" element={<HelpLayout />}>
                     <Route index element={<HelpHubPage />} />
                     <Route path="por-onde-comecar" element={<HelpGettingStartedPage />} />

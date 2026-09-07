@@ -2,32 +2,6 @@ import type { HelpFeature } from '../types';
 
 export const comingSoonFeatures: HelpFeature[] = [
   {
-    id: 'simulacoes',
-    title: 'Simulações financeiras',
-    status: 'comingSoon',
-    whatIs:
-      'Ferramenta planejada para calcular cenários, como o efeito de juros ou projeções ao longo do tempo.',
-    whatFor: 'Testar hipóteses antes de tomar decisões financeiras.',
-    whatYouSee: ['Em breve — ainda não há tela de simulações no app.'],
-    howTo: [
-      'Nada a fazer por enquanto.',
-      'Quando o recurso for lançado, ele aparecerá no menu e nesta Central de Ajuda.',
-    ],
-  },
-  {
-    id: 'educacao',
-    title: 'Conteúdos educacionais',
-    status: 'comingSoon',
-    whatIs:
-      'Materiais para aprender sobre finanças e investimentos dentro do próprio Valora.',
-    whatFor: 'Combinar organização financeira com aprendizado contínuo.',
-    whatYouSee: ['Em breve — ainda não há biblioteca de conteúdos no app.'],
-    howTo: [
-      'Por enquanto, use o Mercado para notícias e indicadores.',
-      'A trilha educacional será anunciada quando estiver disponível.',
-    ],
-  },
-  {
     id: 'perfil',
     title: 'Perfil e configurações',
     status: 'comingSoon',

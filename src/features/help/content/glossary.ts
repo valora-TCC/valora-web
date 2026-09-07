@@ -73,7 +73,7 @@ export const glossaryTerms: HelpGlossaryTerm[] = [
     id: 'simulacao',
     name: 'Simulação',
     definition:
-      'Ferramenta planejada para calcular cenários financeiros (por exemplo, juros). Ainda não está disponível na interface.',
-    example: 'Em breve: simular o crescimento de uma aplicação.',
+      'Ferramenta para calcular cenários de juros simples ou compostos, com taxas sugeridas da Selic e do CDI.',
+    example: 'Simular R$ 1.000 a 12% a.a. por 12 meses em juros compostos.',
   },
 ];

@@ -6,6 +6,8 @@ import {
   Target,
   PiggyBank,
   LineChart,
+  BookOpen,
+  Calculator,
   Globe,
   CircleHelp,
   type LucideIcon,
@@ -50,6 +52,14 @@ export const appNavGroups: AppNavGroup[] = [
     id: 'patrimonio',
     label: 'Patrimônio',
     links: [{ to: '/investments', label: 'Investimentos', icon: LineChart }],
+  },
+  {
+    id: 'aprender',
+    label: 'Aprender',
+    links: [
+      { to: '/educacao', label: 'Educação', icon: BookOpen },
+      { to: '/simulacoes', label: 'Simulações', icon: Calculator },
+    ],
   },
   {
     id: 'mercado',

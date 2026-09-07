@@ -47,13 +47,13 @@ export const faqItems: HelpFaqItem[] = [
     id: 'simulacoes',
     question: 'Para que servem as simulações?',
     answer:
-      'Simulações servirão para calcular cenários financeiros (como juros). Esse recurso ainda não está disponível na interface — aparece como Em breve nesta Central de Ajuda.',
+      'Em Simulações você calcula juros simples ou compostos, pode aplicar Selic/CDI sugeridos pelo Banco Central e salvar cenários no histórico da sua conta.',
   },
   {
     id: 'conteudos',
     question: 'Como utilizar os conteúdos educacionais?',
     answer:
-      'Conteúdos educacionais sobre finanças e investimentos estão previstos, mas ainda não há tela no app. Assim que forem lançados, esta ajuda será atualizada.',
+      'Abra Educação no menu Aprender, escolha um conteúdo nas trilhas (iniciante, intermediário ou avançado) e marque o progresso. Indicadores e notícias complementam o aprendizado com dados reais.',
   },
   {
     id: 'perfil',

@@ -265,6 +265,52 @@ export const helpFeatures: HelpFeature[] = [
       'Os dados de mercado são consultivos e não alteram carteiras, transações ou orçamentos automaticamente.',
   },
   {
+    id: 'educacao',
+    title: 'Educação Financeira',
+    href: '/educacao',
+    status: 'available',
+    whatIs:
+      'Biblioteca de conteúdos em trilhas (iniciante, intermediário e avançado), com indicadores reais, notícias e exemplos de mercado.',
+    whatFor:
+      'Aprender conceitos financeiros e acompanhar progresso, complementando a organização do dia a dia no Valora.',
+    whatYouSee: [
+      'Continue aprendendo',
+      'Trilhas por nível',
+      'Indicadores (Selic, CDI, IPCA, dólar)',
+      'Atualidades e dados reais (ações / Tesouro)',
+    ],
+    howTo: [
+      'Abra Educação no menu Aprender.',
+      'Escolha um conteúdo na trilha desejada.',
+      'Marque o progresso ou conclua a leitura.',
+      'Use os indicadores e notícias como complemento ao texto.',
+    ],
+    afterAction:
+      'O progresso fica associado à sua conta. Dados de mercado são informativos e não alteram suas finanças automaticamente.',
+  },
+  {
+    id: 'simulacoes',
+    title: 'Simulações financeiras',
+    href: '/simulacoes',
+    status: 'available',
+    whatIs:
+      'Calculadora de juros simples e compostos com opção de usar taxas sugeridas da Selic e do CDI.',
+    whatFor: 'Testar cenários de rendimento antes de tomar decisões.',
+    whatYouSee: [
+      'Formulário de simulação',
+      'Botões para aplicar Selic/CDI',
+      'Resultado do cálculo',
+      'Histórico de simulações salvas',
+    ],
+    howTo: [
+      'Abra Simulações no menu Aprender.',
+      'Informe valor, taxa e prazo — ou use Selic/CDI sugeridos.',
+      'Calcule e, se quiser, salve o cenário.',
+    ],
+    afterAction:
+      'Simulações salvas ficam no histórico da sua conta. Elas não criam investimentos automaticamente.',
+  },
+  {
     id: 'conta-preferencias',
     title: 'Conta e preferências',
     status: 'available',
