@@ -10,6 +10,9 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { EmptyState } from '@/components/ui/empty-state';
+import { FormSection, Field } from '@/components/ui/form-section';
+import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
 
 const schema = z.object({
   nome: z.string().min(2),
@@ -82,75 +85,124 @@ export function MetasPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader title="Metas" description="Defina objetivos e acompanhe o progresso" />
+      <PageHeader
+        title="Metas"
+        description="Defina um objetivo financeiro e registre o progresso até alcançá-lo."
+      />
 
       <Card>
-        <form
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          onSubmit={(e) =>
-            void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
-          }
+        <FormSection
+          title="Criar meta"
+          description="Primeiro crie a meta com valor e prazo. Depois registre quanto já guardou."
         >
-          <Input placeholder="Nome" className="sm:col-span-2" {...createForm.register('nome')} />
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Valor objetivo"
-            {...createForm.register('valorObjetivo', { valueAsNumber: true })}
-          />
-          <Input
-            placeholder="Descrição"
-            className="sm:col-span-2"
-            {...createForm.register('descricao')}
-          />
-          <Input type="date" {...createForm.register('dataInicio')} />
-          <Input type="date" {...createForm.register('dataFim')} />
-          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={createMutation.isPending}>
-            Criar meta
-          </Button>
-          {createMutation.error && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3">
-              {getErrorMessage(createMutation.error)}
-            </p>
-          )}
-        </form>
+          <form
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            onSubmit={(e) =>
+              void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
+            }
+          >
+            <Field label="Nome" className="sm:col-span-2">
+              <Input placeholder="Ex.: Reserva de emergência" {...createForm.register('nome')} />
+            </Field>
+            <Field label="Valor objetivo">
+              <Input
+                type="number"
+                step="0.01"
+                {...createForm.register('valorObjetivo', { valueAsNumber: true })}
+              />
+            </Field>
+            <Field label="Descrição" hint="Opcional" className="sm:col-span-2">
+              <Input placeholder="Para que serve esta meta" {...createForm.register('descricao')} />
+            </Field>
+            <Field label="Início">
+              <Input type="date" {...createForm.register('dataInicio')} />
+            </Field>
+            <Field label="Prazo">
+              <Input type="date" {...createForm.register('dataFim')} />
+            </Field>
+            <div className="flex items-end">
+              <Button
+                type="submit"
+                className="w-full lg:w-auto"
+                disabled={createMutation.isPending}
+              >
+                Criar meta
+              </Button>
+            </div>
+            {createMutation.error && (
+              <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3">
+                {getErrorMessage(createMutation.error)}
+              </p>
+            )}
+          </form>
+        </FormSection>
       </Card>
 
-      <Card>
-        <form
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          onSubmit={(e) =>
-            void progressoForm.handleSubmit((values) => progressoMutation.mutateAsync(values))(e)
-          }
-        >
-          <Select {...progressoForm.register('idMeta')}>
-            <option value="">Meta</option>
-            {data.map((meta) => (
-              <option key={meta.id} value={meta.id}>
-                {meta.nome}
-              </option>
-            ))}
-          </Select>
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Valor"
-            {...progressoForm.register('valor', { valueAsNumber: true })}
-          />
-          <Input placeholder="Observação" {...progressoForm.register('observacao')} />
-          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={progressoMutation.isPending}>
-            Registrar progresso
-          </Button>
-          {progressoMutation.error && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
-              {getErrorMessage(progressoMutation.error)}
-            </p>
-          )}
-        </form>
-      </Card>
+      {data.length > 0 ? (
+        <Card>
+          <FormSection
+            title="Registrar progresso"
+            description="Some valores à meta conforme você poupa ou avança no objetivo."
+          >
+            <form
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+              onSubmit={(e) =>
+                void progressoForm.handleSubmit((values) =>
+                  progressoMutation.mutateAsync(values),
+                )(e)
+              }
+            >
+              <Field label="Meta">
+                <Select {...progressoForm.register('idMeta')}>
+                  <option value="">Selecione</option>
+                  {data.map((meta) => (
+                    <option key={meta.id} value={meta.id}>
+                      {meta.nome}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field label="Valor">
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...progressoForm.register('valor', { valueAsNumber: true })}
+                />
+              </Field>
+              <Field label="Observação" hint="Opcional">
+                <Input placeholder="Ex.: Aporte do mês" {...progressoForm.register('observacao')} />
+              </Field>
+              <div className="flex items-end">
+                <Button
+                  type="submit"
+                  className="w-full lg:w-auto"
+                  disabled={progressoMutation.isPending}
+                >
+                  Registrar progresso
+                </Button>
+              </div>
+              {progressoMutation.error && (
+                <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
+                  {getErrorMessage(progressoMutation.error)}
+                </p>
+              )}
+            </form>
+          </FormSection>
+        </Card>
+      ) : (
+        <PrerequisiteNotice
+          title="Crie uma meta primeiro"
+          description="O formulário de progresso aparece depois que existir ao menos uma meta."
+        />
+      )}
 
       {isLoading ? (
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
+      ) : data.length === 0 ? (
+        <EmptyState
+          title="Nenhuma meta ainda"
+          description="Crie um objetivo (ex.: viagem ou reserva) e acompanhe o percentual concluído."
+        />
       ) : (
         <ul className="space-y-3">
           {data.map((meta) => (

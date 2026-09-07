@@ -11,6 +11,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
 import { ListRow } from '@/components/ui/list-row';
+import { EmptyState } from '@/components/ui/empty-state';
+import { FormSection, Field } from '@/components/ui/form-section';
+import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
 
 const schema = z.object({
   idCarteira: z.string().uuid(),
@@ -42,6 +45,8 @@ export function TransacoesPage() {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
@@ -52,6 +57,12 @@ export function TransacoesPage() {
     },
   });
 
+  const tipo = watch('tipo');
+  const tipoRegister = register('tipo');
+  const categoriasFiltradas = categorias.filter((c) => c.tipo === tipo);
+  const canCreate = carteiras.length > 0 && categorias.length > 0;
+  const items = data?.items ?? [];
+
   const createMutation = useMutation({
     mutationFn: transacoesApi.create,
     onSuccess: async () => {
@@ -61,7 +72,7 @@ export function TransacoesPage() {
         descricao: '',
         valor: 0,
         idCarteira: carteiras[0]?.id,
-        idCategoria: categorias[0]?.id,
+        idCategoria: categorias.filter((c) => c.tipo === 'DESPESA')[0]?.id,
       });
       await queryClient.invalidateQueries({ queryKey: ['transacoes'] });
       await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
@@ -80,70 +91,133 @@ export function TransacoesPage() {
     },
   });
 
+  const missingLinks = [
+    ...(carteiras.length === 0 ? [{ to: '/carteiras', label: 'Criar carteira' }] : []),
+    ...(categorias.length === 0 ? [{ to: '/categorias', label: 'Criar categorias' }] : []),
+  ];
+
   return (
     <div className="page-stack">
-      <PageHeader title="Transações" description="Receitas e despesas" />
+      <PageHeader
+        title="Transações"
+        description="Terceiro passo: registre receitas e despesas. Elas alimentam o dashboard e os orçamentos."
+      />
 
-      <Card>
-        <form
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          onSubmit={(e) =>
-            void handleSubmit(async (values) => {
-              await createMutation.mutateAsync({
-                ...values,
-                dataTransacao: new Date(values.dataTransacao).toISOString(),
-              });
-            })(e)
-          }
-        >
-          <Input placeholder="Descrição" className="sm:col-span-2" {...register('descricao')} />
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Valor"
-            {...register('valor', { valueAsNumber: true })}
-          />
-          <Select {...register('tipo')}>
-            <option value="DESPESA">Despesa</option>
-            <option value="RECEITA">Receita</option>
-          </Select>
-          <Select {...register('idCarteira')}>
-            <option value="">Carteira</option>
-            {carteiras.map((carteira) => (
-              <option key={carteira.id} value={carteira.id}>
-                {carteira.nome}
-              </option>
-            ))}
-          </Select>
-          <Select {...register('idCategoria')}>
-            <option value="">Categoria</option>
-            {categorias.map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.nome}
-              </option>
-            ))}
-          </Select>
-          <Input type="datetime-local" {...register('dataTransacao')} />
-          <Button
-            type="submit"
-            className="w-full sm:col-span-2 lg:w-auto"
-            disabled={isSubmitting || createMutation.isPending}
+      {!canCreate && (
+        <PrerequisiteNotice
+          title="Falta a base para registrar"
+          description="Para lançar uma transação você precisa de pelo menos uma carteira e uma categoria."
+          links={missingLinks}
+        />
+      )}
+
+      {canCreate ? (
+        <Card>
+          <FormSection
+            title="Nova transação"
+            description="Escolha o tipo, a carteira e a categoria correspondente. O saldo da carteira atualiza automaticamente."
           >
-            Registrar
-          </Button>
-          {createMutation.error && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3">
-              {getErrorMessage(createMutation.error)}
-            </p>
-          )}
-        </form>
-      </Card>
+            <form
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+              onSubmit={(e) =>
+                void handleSubmit(async (values) => {
+                  await createMutation.mutateAsync({
+                    ...values,
+                    dataTransacao: new Date(values.dataTransacao).toISOString(),
+                  });
+                })(e)
+              }
+            >
+              <Field label="Descrição" className="sm:col-span-2">
+                <Input placeholder="Ex.: Mercado da semana" {...register('descricao')} />
+              </Field>
+              <Field label="Valor">
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...register('valor', { valueAsNumber: true })}
+                />
+              </Field>
+              <Field label="Tipo">
+                <Select
+                  {...tipoRegister}
+                  onChange={(e) => {
+                    void tipoRegister.onChange(e);
+                    setValue('idCategoria', '');
+                  }}
+                >
+                  <option value="DESPESA">Despesa</option>
+                  <option value="RECEITA">Receita</option>
+                </Select>
+              </Field>
+              <Field label="Carteira">
+                <Select {...register('idCarteira')}>
+                  <option value="">Selecione</option>
+                  {carteiras.map((carteira) => (
+                    <option key={carteira.id} value={carteira.id}>
+                      {carteira.nome}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field
+                label="Categoria"
+                hint={
+                  categoriasFiltradas.length === 0
+                    ? `Nenhuma categoria de ${tipo === 'RECEITA' ? 'receita' : 'despesa'}. Crie uma em Categorias.`
+                    : undefined
+                }
+              >
+                <Select {...register('idCategoria')}>
+                  <option value="">Selecione</option>
+                  {categoriasFiltradas.map((categoria) => (
+                    <option key={categoria.id} value={categoria.id}>
+                      {categoria.nome}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field label="Data e hora">
+                <Input type="datetime-local" {...register('dataTransacao')} />
+              </Field>
+              <div className="flex items-end sm:col-span-2 lg:col-span-1">
+                <Button
+                  type="submit"
+                  className="w-full lg:w-auto"
+                  disabled={isSubmitting || createMutation.isPending}
+                >
+                  Registrar
+                </Button>
+              </div>
+              {createMutation.error && (
+                <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-3">
+                  {getErrorMessage(createMutation.error)}
+                </p>
+              )}
+            </form>
+          </FormSection>
+        </Card>
+      ) : null}
 
       {isLoading ? (
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
+      ) : items.length === 0 ? (
+        <EmptyState
+          title="Nenhuma transação ainda"
+          description={
+            canCreate
+              ? 'Registre a primeira receita ou despesa para ver números no dashboard.'
+              : 'Conclua carteiras e categorias antes de lançar movimentos.'
+          }
+          action={
+            !canCreate && missingLinks[0]
+              ? { to: missingLinks[0].to, label: missingLinks[0].label }
+              : undefined
+          }
+        />
       ) : (
         <ul className="space-y-3">
-          {(data?.items ?? []).map((tx) => (
+          {items.map((tx) => (
             <ListRow
               key={tx.id}
               title={tx.descricao}

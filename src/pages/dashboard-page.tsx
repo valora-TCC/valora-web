@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { format, startOfMonth } from 'date-fns';
@@ -11,12 +12,15 @@ import { StatCard } from '@/components/ui/stat-card';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ListRow } from '@/components/ui/list-row';
+import { EmptyState } from '@/components/ui/empty-state';
+import { useSetupProgress } from '@/features/setup/use-setup-progress';
 
 export function DashboardPage() {
   const isMobile = useMediaQuery('(max-width: 639px)');
   const chartColors = useChartTheme();
   const [from, setFrom] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const setup = useSetupProgress();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['dashboard', from, to],
@@ -32,20 +36,28 @@ export function DashboardPage() {
     [data],
   );
 
+  const hasRecent = (data?.recentTransactions.length ?? 0) > 0;
+  const nextStepTo = setup.nextStep?.to ?? '/transacoes';
+
   return (
     <div className="page-stack">
-      <PageHeader title="Visão geral" description="Indicadores do período selecionado">
+      <PageHeader
+        title="Visão geral"
+        description="Acompanhe saldo, receitas e despesas do período."
+      >
         <Input
           type="date"
           className="min-w-0 flex-1 sm:flex-none"
           value={from}
           onChange={(e) => setFrom(e.target.value)}
+          aria-label="Data inicial"
         />
         <Input
           type="date"
           className="min-w-0 flex-1 sm:flex-none"
           value={to}
           onChange={(e) => setTo(e.target.value)}
+          aria-label="Data final"
         />
       </PageHeader>
 
@@ -55,17 +67,30 @@ export function DashboardPage() {
       {data && (
         <>
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Saldo" value={formatCurrency(data.totals.balance)} highlight />
-            <StatCard label="Receitas" value={formatCurrency(data.totals.income)} />
-            <StatCard label="Despesas" value={formatCurrency(data.totals.expense)} />
-            <StatCard label="Resultado" value={formatCurrency(data.totals.net)} />
+            <StatCard label="Saldo das carteiras" value={formatCurrency(data.totals.balance)} highlight />
+            <StatCard label="Receitas no período" value={formatCurrency(data.totals.income)} />
+            <StatCard label="Despesas no período" value={formatCurrency(data.totals.expense)} />
+            <StatCard label="Resultado do período" value={formatCurrency(data.totals.net)} />
           </section>
 
           <Card>
             <h2 className="mb-4 text-lg font-semibold">Despesas por categoria</h2>
             <div className="h-56 sm:h-72">
               {chartData.length === 0 ? (
-                <p className="text-sm text-[var(--color-text-muted)]">Sem despesas no período.</p>
+                <EmptyState
+                  className="h-full border-0 py-10"
+                  title="Sem despesas no período"
+                  description={
+                    setup.coreComplete
+                      ? 'Registre despesas neste intervalo para ver o gráfico.'
+                      : 'Conclua a configuração inicial e registre transações para ver o gráfico.'
+                  }
+                  action={
+                    setup.coreComplete
+                      ? { to: '/transacoes', label: 'Registrar transação' }
+                      : { to: nextStepTo, label: 'Continuar configuração' }
+                  }
+                />
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
@@ -125,29 +150,53 @@ export function DashboardPage() {
 
           <Card>
             <h2 className="mb-4 text-lg font-semibold">Transações recentes</h2>
-            <ul className="space-y-3">
-              {data.recentTransactions.map((tx) => (
-                <ListRow
-                  key={tx.id}
-                  asCard={false}
-                  className="border-b border-[var(--color-line)] pb-3 last:border-0"
-                  title={tx.descricao}
-                  subtitle={`${tx.categoria?.nome ?? 'Sem categoria'} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy')}`}
-                  trailing={
-                    <p
-                      className={
-                        tx.tipo === 'DESPESA'
-                          ? 'text-[var(--color-expense)]'
-                          : 'text-[var(--color-income)]'
-                      }
+            {hasRecent ? (
+              <ul className="space-y-3">
+                {data.recentTransactions.map((tx) => (
+                  <ListRow
+                    key={tx.id}
+                    asCard={false}
+                    className="border-b border-[var(--color-line)] pb-3 last:border-0"
+                    title={tx.descricao}
+                    subtitle={`${tx.categoria?.nome ?? 'Sem categoria'} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy')}`}
+                    trailing={
+                      <p
+                        className={
+                          tx.tipo === 'DESPESA'
+                            ? 'text-[var(--color-expense)]'
+                            : 'text-[var(--color-income)]'
+                        }
+                      >
+                        {tx.tipo === 'DESPESA' ? '-' : '+'}
+                        {formatCurrency(tx.valor)}
+                      </p>
+                    }
+                  />
+                ))}
+              </ul>
+            ) : (
+              <EmptyState
+                className="border-0 py-6"
+                title="Ainda não há movimentos"
+                description={
+                  setup.coreComplete
+                    ? 'Registre receitas e despesas para acompanhar o período aqui.'
+                    : 'Depois de criar carteiras e categorias, registre a primeira transação.'
+                }
+                action={
+                  setup.coreComplete ? (
+                    { to: '/transacoes', label: 'Ir para transações' }
+                  ) : (
+                    <Link
+                      to={nextStepTo}
+                      className="btn-primary inline-flex items-center justify-center"
                     >
-                      {tx.tipo === 'DESPESA' ? '-' : '+'}
-                      {formatCurrency(tx.valor)}
-                    </p>
-                  }
-                />
-              ))}
-            </ul>
+                      Continuar configuração
+                    </Link>
+                  )
+                }
+              />
+            )}
           </Card>
         </>
       )}

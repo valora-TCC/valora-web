@@ -17,6 +17,21 @@ import { TransacoesPage } from '@/pages/transacoes-page';
 import { MetasPage } from '@/pages/metas-page';
 import { OrcamentosPage } from '@/pages/orcamentos-page';
 import { InvestmentsPage } from '@/pages/investments-page';
+import { EducacaoPage, EducacaoDetailPage } from '@/pages/educacao-page';
+import { SimulacoesPage } from '@/pages/simulacoes-page';
+import { HelpLayout } from '@/features/help/components/help-layout';
+import {
+  HelpHubPage,
+  HelpGettingStartedPage,
+  HelpFirstStepsPage,
+  HelpUsageFlowPage,
+  HelpFeaturesPage,
+  HelpFeatureDetailPage,
+  HelpExamplesPage,
+  HelpGlossaryPage,
+  HelpFaqPage,
+  HelpComingSoonPage,
+} from '@/pages/help-page';
 import { ProfileBootstrap } from '@/features/auth/profile-bootstrap';
 
 export default function App() {
@@ -45,6 +60,22 @@ export default function App() {
                   <Route path="metas" element={<MetasPage />} />
                   <Route path="orcamentos" element={<OrcamentosPage />} />
                   <Route path="investments" element={<InvestmentsPage />} />
+                  <Route path="educacao" element={<EducacaoPage />} />
+                  <Route path="educacao/id/:id" element={<EducacaoDetailPage />} />
+                  <Route path="educacao/:slug" element={<EducacaoDetailPage />} />
+                  <Route path="simulacoes" element={<SimulacoesPage />} />
+                  <Route path="ajuda" element={<HelpLayout />}>
+                    <Route index element={<HelpHubPage />} />
+                    <Route path="por-onde-comecar" element={<HelpGettingStartedPage />} />
+                    <Route path="primeiros-passos" element={<HelpFirstStepsPage />} />
+                    <Route path="como-utilizar" element={<HelpUsageFlowPage />} />
+                    <Route path="funcionalidades" element={<HelpFeaturesPage />} />
+                    <Route path="funcionalidades/:featureId" element={<HelpFeatureDetailPage />} />
+                    <Route path="exemplos" element={<HelpExamplesPage />} />
+                    <Route path="glossario" element={<HelpGlossaryPage />} />
+                    <Route path="faq" element={<HelpFaqPage />} />
+                    <Route path="em-breve" element={<HelpComingSoonPage />} />
+                  </Route>
                 </Route>
               </Route>
             </Route>

@@ -9,6 +9,9 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { EmptyState } from '@/components/ui/empty-state';
+import { FormSection, Field } from '@/components/ui/form-section';
+import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
 
 const months = [
   'Janeiro',
@@ -54,6 +57,7 @@ export function OrcamentosPage() {
     queryFn: categoriasApi.list,
   });
   const categoriasDespesa = categorias.filter((item) => item.tipo === 'DESPESA');
+  const canSetLimite = data.length > 0 && categoriasDespesa.length > 0;
 
   const createForm = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
@@ -111,92 +115,147 @@ export function OrcamentosPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader title="Orçamento" description="Limites mensais por categoria" />
+      <PageHeader
+        title="Orçamento"
+        description="Defina o teto do mês e, em seguida, limites por categoria de despesa."
+      />
 
       <Card>
-        <form
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          onSubmit={(e) =>
-            void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
-          }
+        <FormSection
+          title="Criar orçamento"
+          description="Comece pelo orçamento do mês. Depois distribua limites nas categorias de gasto."
         >
-          <Input placeholder="Nome" className="sm:col-span-2" {...createForm.register('nome')} />
-          <Select {...createForm.register('mes', { valueAsNumber: true })}>
-            {months.map((label, index) => (
-              <option key={label} value={index + 1}>
-                {label}
-              </option>
-            ))}
-          </Select>
-          <Input
-            type="number"
-            placeholder="Ano"
-            {...createForm.register('ano', { valueAsNumber: true })}
-          />
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Valor total"
-            {...createForm.register('valorTotal', { valueAsNumber: true })}
-          />
-          <Input
-            placeholder="Observação"
-            className="sm:col-span-2"
-            {...createForm.register('observacao')}
-          />
-          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={createMutation.isPending}>
-            Criar orçamento
-          </Button>
-          {createMutation.error && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
-              {getErrorMessage(createMutation.error)}
-            </p>
-          )}
-        </form>
+          <form
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            onSubmit={(e) =>
+              void createForm.handleSubmit((values) => createMutation.mutateAsync(values))(e)
+            }
+          >
+            <Field label="Nome" className="sm:col-span-2">
+              <Input placeholder="Ex.: Orçamento de março" {...createForm.register('nome')} />
+            </Field>
+            <Field label="Mês">
+              <Select {...createForm.register('mes', { valueAsNumber: true })}>
+                {months.map((label, index) => (
+                  <option key={label} value={index + 1}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label="Ano">
+              <Input
+                type="number"
+                {...createForm.register('ano', { valueAsNumber: true })}
+              />
+            </Field>
+            <Field label="Valor total" hint="Teto geral do mês">
+              <Input
+                type="number"
+                step="0.01"
+                {...createForm.register('valorTotal', { valueAsNumber: true })}
+              />
+            </Field>
+            <Field label="Observação" hint="Opcional" className="sm:col-span-2">
+              <Input {...createForm.register('observacao')} />
+            </Field>
+            <div className="flex items-end sm:col-span-2 lg:col-span-1">
+              <Button
+                type="submit"
+                className="w-full lg:w-auto"
+                disabled={createMutation.isPending}
+              >
+                Criar orçamento
+              </Button>
+            </div>
+            {createMutation.error && (
+              <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
+                {getErrorMessage(createMutation.error)}
+              </p>
+            )}
+          </form>
+        </FormSection>
       </Card>
 
-      <Card>
-        <form
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          onSubmit={(e) =>
-            void limiteForm.handleSubmit((values) => limiteMutation.mutateAsync(values))(e)
+      {canSetLimite ? (
+        <Card>
+          <FormSection
+            title="Definir limite por categoria"
+            description="Só categorias de despesa. Os gastos vêm das transações do período."
+          >
+            <form
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+              onSubmit={(e) =>
+                void limiteForm.handleSubmit((values) => limiteMutation.mutateAsync(values))(e)
+              }
+            >
+              <Field label="Orçamento">
+                <Select {...limiteForm.register('idOrcamento')}>
+                  <option value="">Selecione</option>
+                  {data.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nome} ({months[item.mes - 1]} {item.ano})
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field label="Categoria">
+                <Select {...limiteForm.register('idCategoria')}>
+                  <option value="">Selecione</option>
+                  {categoriasDespesa.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nome}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field label="Limite">
+                <Input
+                  type="number"
+                  step="0.01"
+                  {...limiteForm.register('limite', { valueAsNumber: true })}
+                />
+              </Field>
+              <div className="flex items-end">
+                <Button
+                  type="submit"
+                  className="w-full lg:w-auto"
+                  disabled={limiteMutation.isPending}
+                >
+                  Definir limite
+                </Button>
+              </div>
+              {limiteMutation.error && (
+                <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
+                  {getErrorMessage(limiteMutation.error)}
+                </p>
+              )}
+            </form>
+          </FormSection>
+        </Card>
+      ) : (
+        <PrerequisiteNotice
+          title="Limites por categoria ainda indisponíveis"
+          description={
+            data.length === 0
+              ? 'Crie um orçamento primeiro. Depois defina quanto pode gastar em cada categoria.'
+              : 'Crie ao menos uma categoria de despesa para limitar gastos.'
           }
-        >
-          <Select {...limiteForm.register('idOrcamento')}>
-            <option value="">Orçamento</option>
-            {data.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nome} ({months[item.mes - 1]} {item.ano})
-              </option>
-            ))}
-          </Select>
-          <Select {...limiteForm.register('idCategoria')}>
-            <option value="">Categoria</option>
-            {categoriasDespesa.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nome}
-              </option>
-            ))}
-          </Select>
-          <Input
-            type="number"
-            step="0.01"
-            placeholder="Limite"
-            {...limiteForm.register('limite', { valueAsNumber: true })}
-          />
-          <Button type="submit" className="w-full sm:col-span-2 lg:col-span-1 lg:w-auto" disabled={limiteMutation.isPending}>
-            Definir limite
-          </Button>
-          {limiteMutation.error && (
-            <p className="sm:col-span-2 text-sm text-[var(--color-danger)] lg:col-span-4">
-              {getErrorMessage(limiteMutation.error)}
-            </p>
-          )}
-        </form>
-      </Card>
+          links={
+            data.length === 0
+              ? []
+              : [{ to: '/categorias', label: 'Criar categoria de despesa' }]
+          }
+        />
+      )}
 
       {isLoading ? (
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
+      ) : data.length === 0 ? (
+        <EmptyState
+          title="Nenhum orçamento ainda"
+          description="Crie o orçamento do mês e depois defina limites por categoria de despesa."
+        />
       ) : (
         <ul className="space-y-4">
           {data.map((orcamento) => (
@@ -228,28 +287,34 @@ export function OrcamentosPage() {
                   </Button>
                 </div>
               </div>
-              <ul className="space-y-2">
-                {orcamento.categorias.map((item) => (
-                  <li key={item.id} className="list-row text-sm">
-                    <span className="min-w-0 truncate">
-                      {item.categoria?.nome ?? 'Categoria'} · {formatCurrency(item.valorGasto)} /{' '}
-                      {formatCurrency(item.limite)} ({item.percentual}%)
-                    </span>
-                    <Button
-                      variant="danger"
-                      className="w-full sm:w-auto"
-                      onClick={() =>
-                        removeCategoriaMutation.mutate({
-                          id: orcamento.id,
-                          idOrcCategoria: item.id,
-                        })
-                      }
-                    >
-                      Remover
-                    </Button>
-                  </li>
-                ))}
-              </ul>
+              {orcamento.categorias.length === 0 ? (
+                <p className="text-sm text-[var(--color-text-muted)]">
+                  Sem limites por categoria. Use o formulário acima para definir.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {orcamento.categorias.map((item) => (
+                    <li key={item.id} className="list-row text-sm">
+                      <span className="min-w-0 truncate">
+                        {item.categoria?.nome ?? 'Categoria'} · {formatCurrency(item.valorGasto)} /{' '}
+                        {formatCurrency(item.limite)} ({item.percentual}%)
+                      </span>
+                      <Button
+                        variant="danger"
+                        className="w-full sm:w-auto"
+                        onClick={() =>
+                          removeCategoriaMutation.mutate({
+                            id: orcamento.id,
+                            idOrcCategoria: item.id,
+                          })
+                        }
+                      >
+                        Remover
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
