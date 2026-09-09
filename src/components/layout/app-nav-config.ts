@@ -10,6 +10,7 @@ import {
   Calculator,
   Globe,
   CircleHelp,
+  FileText,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -29,7 +30,10 @@ export const appNavGroups: AppNavGroup[] = [
   {
     id: 'visao',
     label: 'Visão',
-    links: [{ to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard }],
+    links: [
+      { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/relatorios', label: 'Relatórios', icon: FileText },
+    ],
   },
   {
     id: 'base',

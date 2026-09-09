@@ -11,6 +11,7 @@ import { RegisterPage } from '@/pages/register-page';
 import { ForgotPasswordPage } from '@/pages/forgot-password-page';
 import { HomePage } from '@/pages/home-page';
 import { DashboardPage } from '@/pages/dashboard-page';
+import { RelatoriosPage } from '@/pages/relatorios-page';
 import { CarteirasPage } from '@/pages/carteiras-page';
 import { CategoriasPage } from '@/pages/categorias-page';
 import { TransacoesPage } from '@/pages/transacoes-page';
@@ -54,6 +55,7 @@ export default function App() {
               <Route element={<ProfileBootstrap />}>
                 <Route element={<AppLayout />}>
                   <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="relatorios" element={<RelatoriosPage />} />
                   <Route path="carteiras" element={<CarteirasPage />} />
                   <Route path="categorias" element={<CategoriasPage />} />
                   <Route path="transacoes" element={<TransacoesPage />} />

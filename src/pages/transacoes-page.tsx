@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { carteirasApi, categoriasApi, transacoesApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
+import { toTransactionIso } from '@/utils/period';
 import { getErrorMessage } from '@/lib/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
@@ -52,7 +53,7 @@ export function TransacoesPage() {
     resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
       tipo: 'DESPESA',
-      dataTransacao: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      dataTransacao: format(new Date(), `yyyy-MM-dd'T'HH:mm`),
       descricao: '',
     },
   });
@@ -68,7 +69,7 @@ export function TransacoesPage() {
     onSuccess: async () => {
       reset({
         tipo: 'DESPESA',
-        dataTransacao: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+        dataTransacao: format(new Date(), `yyyy-MM-dd'T'HH:mm`),
         descricao: '',
         valor: 0,
         idCarteira: carteiras[0]?.id,
@@ -123,7 +124,7 @@ export function TransacoesPage() {
                 void handleSubmit(async (values) => {
                   await createMutation.mutateAsync({
                     ...values,
-                    dataTransacao: new Date(values.dataTransacao).toISOString(),
+                    dataTransacao: toTransactionIso(values.dataTransacao),
                   });
                 })(e)
               }
@@ -132,11 +133,7 @@ export function TransacoesPage() {
                 <Input placeholder="Ex.: Mercado da semana" {...register('descricao')} />
               </Field>
               <Field label="Valor">
-                <Input
-                  type="number"
-                  step="0.01"
-                  {...register('valor', { valueAsNumber: true })}
-                />
+                <Input type="number" step="0.01" {...register('valor', { valueAsNumber: true })} />
               </Field>
               <Field label="Tipo">
                 <Select
