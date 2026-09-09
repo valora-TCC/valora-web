@@ -5,6 +5,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
+import { toPeriodEndIso, toPeriodStartIso } from '@/utils/period';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { useChartTheme } from '@/hooks/use-chart-theme';
 import { PageHeader } from '@/components/ui/page-header';
@@ -24,7 +25,11 @@ export function DashboardPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['dashboard', from, to],
-    queryFn: () => dashboardApi.summary({ from, to }),
+    queryFn: () =>
+      dashboardApi.summary({
+        from: toPeriodStartIso(from),
+        to: toPeriodEndIso(to),
+      }),
   });
 
   const chartData = useMemo(
@@ -67,7 +72,11 @@ export function DashboardPage() {
       {data && (
         <>
           <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StatCard label="Saldo das carteiras" value={formatCurrency(data.totals.balance)} highlight />
+            <StatCard
+              label="Saldo das carteiras"
+              value={formatCurrency(data.totals.balance)}
+              highlight
+            />
             <StatCard label="Receitas no período" value={formatCurrency(data.totals.income)} />
             <StatCard label="Despesas no período" value={formatCurrency(data.totals.expense)} />
             <StatCard label="Resultado do período" value={formatCurrency(data.totals.net)} />

@@ -1,4 +1,5 @@
 import { api } from '@/lib/api';
+import axios from 'axios';
 import type {
   Carteira,
   Categoria,
@@ -89,6 +90,63 @@ export const orcamentosApi = {
 export const dashboardApi = {
   summary: (params?: { from?: string; to?: string }) =>
     api.get<DashboardSummary>('/dashboard/summary', { params }).then((r) => r.data),
+};
+
+export type ReportType = 'metas' | 'orcamentos' | 'carteiras' | 'dashboard';
+export type ReportFormat = 'pdf' | 'xlsx';
+
+function filenameFromDisposition(header: string | undefined, fallback: string): string {
+  if (!header) return fallback;
+  const utfMatch = /filename\*=UTF-8''([^;]+)/i.exec(header);
+  if (utfMatch?.[1]) return decodeURIComponent(utfMatch[1]);
+  const plainMatch = /filename="?([^";]+)"?/i.exec(header);
+  return plainMatch?.[1] ?? fallback;
+}
+
+export const reportsApi = {
+  export: async (params: {
+    types: ReportType[];
+    format: ReportFormat;
+    from?: string;
+    to?: string;
+  }) => {
+    try {
+      const response = await api.get<Blob>('/reports/export', {
+        params: {
+          types: params.types.join(','),
+          format: params.format,
+          from: params.from,
+          to: params.to,
+        },
+        responseType: 'blob',
+      });
+
+      const fallback = `valora-relatorio.${params.format === 'pdf' ? 'pdf' : 'xlsx'}`;
+      const filename = filenameFromDisposition(
+        response.headers['content-disposition'] as string | undefined,
+        fallback,
+      );
+
+      return { blob: response.data, filename };
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.data instanceof Blob) {
+        const text = await error.response.data.text();
+        try {
+          const parsed = JSON.parse(text) as { message?: string | string[] };
+          const message = Array.isArray(parsed.message)
+            ? parsed.message.join(', ')
+            : (parsed.message ?? 'Falha ao exportar relatório');
+          throw new Error(message);
+        } catch (parseError) {
+          if (parseError instanceof SyntaxError) {
+            throw new Error(text || 'Falha ao exportar relatório');
+          }
+          throw parseError;
+        }
+      }
+      throw error;
+    }
+  },
 };
 
 export const investmentsApi = {
