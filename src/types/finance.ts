@@ -1,9 +1,11 @@
 export type TipoFinanceiro = 'RECEITA' | 'DESPESA';
+export type OrigemTransacao = 'MANUAL' | 'OPEN_FINANCE';
 
 export type Usuario = {
   id: string;
   nome: string;
   email: string | null;
+  cpf?: string | null;
   dataNascimento: string | null;
   ativo: boolean;
 };
@@ -15,6 +17,8 @@ export type Carteira = {
   descricao: string | null;
   saldoAtual: string | number;
   ativo: boolean;
+  idContaExterna?: string | null;
+  instituicaoOf?: string | null;
 };
 
 export type Categoria = {
@@ -34,8 +38,43 @@ export type Transacao = {
   dataTransacao: string;
   descricao: string;
   formaPagamento: string | null;
+  origem?: OrigemTransacao;
   carteira?: Carteira;
   categoria?: Categoria;
+};
+
+export type OpenFinanceConnection = {
+  id: string;
+  belvoLinkId: string;
+  instituicao: string;
+  status: 'PENDING' | 'ACTIVE' | 'SYNCING' | 'ERROR' | 'DISCONNECTED';
+  ultimaSincronizacao: string | null;
+  ultimoErro: string | null;
+  dataCriacao: string;
+  carteiras?: Array<{
+    id: string;
+    nome: string;
+    saldoAtual: string | number;
+    instituicaoOf: string | null;
+    tipoContaOf: string | null;
+    moedaOf: string | null;
+  }>;
+};
+
+export type OpenFinanceAccount = Carteira;
+export type OpenFinanceTransaction = Transacao;
+
+export type WidgetTokenResponse = {
+  access: string;
+  environment: 'sandbox' | 'production';
+  widgetUrl: string;
+};
+
+export type OpenFinanceSyncResult = {
+  connection: OpenFinanceConnection;
+  accountsImported: number;
+  transactionsImported: number;
+  transactionsSkipped: number;
 };
 
 export type Paginated<T> = {

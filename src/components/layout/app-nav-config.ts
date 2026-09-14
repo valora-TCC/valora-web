@@ -11,6 +11,7 @@ import {
   Globe,
   CircleHelp,
   FileText,
+  Landmark,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -40,6 +41,7 @@ export const appNavGroups: AppNavGroup[] = [
     label: 'Base',
     links: [
       { to: '/carteiras', label: 'Carteiras', icon: Wallet },
+      { to: '/open-finance', label: 'Open Finance', icon: Landmark },
       { to: '/categorias', label: 'Categorias', icon: Tags },
       { to: '/transacoes', label: 'Transações', icon: ArrowLeftRight },
     ],

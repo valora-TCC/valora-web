@@ -13,6 +13,7 @@ import { HomePage } from '@/pages/home-page';
 import { DashboardPage } from '@/pages/dashboard-page';
 import { RelatoriosPage } from '@/pages/relatorios-page';
 import { CarteirasPage } from '@/pages/carteiras-page';
+import { OpenFinanceCallbackPage, OpenFinancePage } from '@/pages/open-finance-page';
 import { CategoriasPage } from '@/pages/categorias-page';
 import { TransacoesPage } from '@/pages/transacoes-page';
 import { MetasPage } from '@/pages/metas-page';
@@ -57,6 +58,19 @@ export default function App() {
                   <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="relatorios" element={<RelatoriosPage />} />
                   <Route path="carteiras" element={<CarteirasPage />} />
+                  <Route path="open-finance" element={<OpenFinancePage />} />
+                  <Route
+                    path="open-finance/callback/success"
+                    element={<OpenFinanceCallbackPage kind="success" />}
+                  />
+                  <Route
+                    path="open-finance/callback/exit"
+                    element={<OpenFinanceCallbackPage kind="exit" />}
+                  />
+                  <Route
+                    path="open-finance/callback/event"
+                    element={<OpenFinanceCallbackPage kind="event" />}
+                  />
                   <Route path="categorias" element={<CategoriasPage />} />
                   <Route path="transacoes" element={<TransacoesPage />} />
                   <Route path="metas" element={<MetasPage />} />

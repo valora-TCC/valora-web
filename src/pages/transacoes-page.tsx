@@ -218,7 +218,7 @@ export function TransacoesPage() {
             <ListRow
               key={tx.id}
               title={tx.descricao}
-              subtitle={`${tx.carteira?.nome} · ${tx.categoria?.nome} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')}`}
+              subtitle={`${tx.carteira?.nome} · ${tx.categoria?.nome} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')} · ${tx.origem === 'OPEN_FINANCE' ? 'Open Finance' : 'Manual'}`}
               trailing={
                 <>
                   <p
@@ -230,13 +230,15 @@ export function TransacoesPage() {
                   >
                     {formatCurrency(tx.valor)}
                   </p>
-                  <Button
-                    variant="danger"
-                    className="w-full sm:w-auto"
-                    onClick={() => removeMutation.mutate(tx.id)}
-                  >
-                    Remover
-                  </Button>
+                  {tx.origem !== 'OPEN_FINANCE' && (
+                    <Button
+                      variant="danger"
+                      className="w-full sm:w-auto"
+                      onClick={() => removeMutation.mutate(tx.id)}
+                    >
+                      Remover
+                    </Button>
+                  )}
                 </>
               }
             />
