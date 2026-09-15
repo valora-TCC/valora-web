@@ -48,7 +48,7 @@ describe('OpenFinancePage', () => {
       {
         id: 'conn-1',
         belvoLinkId: 'link-1',
-        instituicao: 'Mockbank',
+        instituicao: 'Nubank',
         status: 'ACTIVE',
         ultimaSincronizacao: '2026-09-13T12:00:00.000Z',
         ultimoErro: null,
@@ -58,7 +58,7 @@ describe('OpenFinancePage', () => {
             id: 'c1',
             nome: 'Conta Corrente',
             saldoAtual: 2483.72,
-            instituicaoOf: 'Mockbank',
+            instituicaoOf: 'Nubank',
             tipoContaOf: 'checking',
             moedaOf: 'BRL',
           },
@@ -67,18 +67,18 @@ describe('OpenFinancePage', () => {
     ]);
 
     renderPage();
-    expect(await screen.findByText('Mockbank')).toBeInTheDocument();
+    expect(await screen.findByText('Nubank')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sincronizar/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /desconectar/i })).toBeInTheDocument();
     expect(screen.getByText(/conta corrente/i)).toBeInTheDocument();
   });
 
-  it('connects bank with CPF and name', async () => {
+  it('connects bank with CPF and name after Belvo confirmation', async () => {
     vi.mocked(openFinanceApi.seedDemo).mockResolvedValue({
       connection: {
         id: 'conn-1',
         belvoLinkId: 'demo-76109277673',
-        instituicao: 'Mockbank',
+        instituicao: 'Nubank',
         status: 'ACTIVE',
         ultimaSincronizacao: new Date().toISOString(),
         ultimoErro: null,
@@ -100,6 +100,15 @@ describe('OpenFinancePage', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /conectar banco/i }));
 
+    expect(openFinanceApi.seedDemo).not.toHaveBeenCalled();
+    expect(
+      await screen.findByRole('heading', {
+        name: /valora usa a belvo para conectar sua conta/i,
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /continuar/i }));
+
     await waitFor(() => {
       expect(openFinanceApi.seedDemo).toHaveBeenCalledWith(
         { cpf: '76109277673', fullName: 'Ralph Bragg' },
@@ -109,12 +118,40 @@ describe('OpenFinancePage', () => {
     expect(await screen.findByText(/banco conectado com sucesso/i)).toBeInTheDocument();
   });
 
+  it('does not connect when Belvo confirmation is cancelled', async () => {
+    renderPage();
+    fireEvent.change(await screen.findByPlaceholderText(/somente números/i), {
+      target: { value: '76109277673' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/nome do titular/i), {
+      target: { value: 'Ralph Bragg' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /conectar banco/i }));
+
+    expect(
+      await screen.findByRole('heading', {
+        name: /valora usa a belvo para conectar sua conta/i,
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /cancelar/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('heading', {
+          name: /valora usa a belvo para conectar sua conta/i,
+        }),
+      ).not.toBeInTheDocument();
+    });
+    expect(openFinanceApi.seedDemo).not.toHaveBeenCalled();
+  });
+
   it('shows friendly sync success message', async () => {
     vi.mocked(openFinanceApi.listConnections).mockResolvedValue([
       {
         id: 'conn-1',
         belvoLinkId: 'link-1',
-        instituicao: 'Mockbank',
+        instituicao: 'Nubank',
         status: 'ACTIVE',
         ultimaSincronizacao: null,
         ultimoErro: null,
@@ -126,7 +163,7 @@ describe('OpenFinancePage', () => {
       connection: {
         id: 'conn-1',
         belvoLinkId: 'link-1',
-        instituicao: 'Mockbank',
+        instituicao: 'Nubank',
         status: 'ACTIVE',
         ultimaSincronizacao: new Date().toISOString(),
         ultimoErro: null,
@@ -147,7 +184,7 @@ describe('OpenFinancePage', () => {
       {
         id: 'conn-1',
         belvoLinkId: 'link-1',
-        instituicao: 'Mockbank',
+        instituicao: 'Nubank',
         status: 'ACTIVE',
         ultimaSincronizacao: null,
         ultimoErro: null,

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm, type Resolver } from 'react-hook-form';
+import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { carteirasApi } from '@/services/finance';
@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { ListRow } from '@/components/ui/list-row';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
@@ -32,6 +33,7 @@ export function CarteirasPage() {
   });
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -99,10 +101,18 @@ export function CarteirasPage() {
               label="Saldo inicial"
               hint="Quanto você tem nesta conta agora"
             >
-              <Input
-                type="number"
-                step="0.01"
-                {...register('saldoAtual', { valueAsNumber: true })}
+              <Controller
+                name="saldoAtual"
+                control={control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    name={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Field>
             <div className="flex items-end">

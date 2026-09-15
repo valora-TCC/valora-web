@@ -34,19 +34,37 @@ export type Simulacao = {
   dataSimulacao: string;
 };
 
+export type ProdutoSimulacao =
+  | 'cdb'
+  | 'tesouro'
+  | 'lci_lca'
+  | 'poupanca'
+  | 'simples'
+  | 'compostos';
+
 export type SimulacaoPreview = {
   valorInicial: number;
   taxaJuros: number;
   tipoCalculo: 'simples' | 'compostos';
   tempoMeses: number;
   periodoTaxa: 'aa' | 'am';
-  resultadoFinal: number;
+  produto: ProdutoSimulacao;
+  resultadoBruto: number;
   juros: number;
+  iof: number;
+  ir: number;
+  aliquotaIof: number;
+  aliquotaIr: number;
+  resultadoLiquido: number;
+  resultadoFinal: number;
 };
 
 export type TaxasSugeridas = {
   selic: MarketTaxa | null;
   cdi: MarketTaxa | null;
+  ipca: MarketTaxa | null;
+  igpm: MarketTaxa | null;
+  poupanca: MarketTaxa | null;
   fonte: string;
   atualizadoEm: string;
 };
@@ -77,6 +95,11 @@ export type MarketEducacaoExtras = {
   atualizadoEm: string;
 };
 
+/** Converte taxa mensal (% a.m.) para equivalente anual (% a.a.). */
+export function mensalParaAnual(taxaMensalPercent: number): number {
+  return (Math.pow(1 + taxaMensalPercent / 100, 12) - 1) * 100;
+}
+
 export const conteudoApi = {
   list: (nivel?: string) =>
     api.get<Conteudo[]>('/conteudo', { params: nivel ? { nivel } : undefined }).then((r) => r.data),
@@ -96,6 +119,7 @@ export const simulacoesApi = {
     tipoCalculo: 'simples' | 'compostos';
     tempoMeses: number;
     periodoTaxa?: 'aa' | 'am';
+    produto?: ProdutoSimulacao;
   }) => api.post<SimulacaoPreview>('/simulacoes/preview', payload).then((r) => r.data),
   create: (payload: {
     nome: string;
@@ -103,6 +127,7 @@ export const simulacoesApi = {
     taxaJuros: number;
     tipoTaxa: string;
     tempoMeses: number;
+    produto?: ProdutoSimulacao;
   }) => api.post<Simulacao>('/simulacoes', payload).then((r) => r.data),
   remove: (id: string) => api.delete(`/simulacoes/${id}`).then((r) => r.data),
 };

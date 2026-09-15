@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
+import { BelvoConnectDialog } from '@/components/open-finance/belvo-connect-dialog';
 import type { OpenFinanceConnection } from '@/types/finance';
 
 const connectSchema = z.object({
@@ -50,6 +51,7 @@ export function OpenFinancePage() {
   const queryClient = useQueryClient();
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [pendingConnect, setPendingConnect] = useState<ConnectForm | null>(null);
 
   const { data: connections = [], isLoading } = useQuery({
     queryKey: ['open-finance-connections'],
@@ -124,14 +126,29 @@ export function OpenFinancePage() {
   });
 
   const onConnect = handleSubmit((values) => {
-    connectMutation.mutate({ cpf: values.cpf, fullName: values.fullName });
+    setPendingConnect(values);
   });
+
+  const closeConnectDialog = () => setPendingConnect(null);
+
+  const confirmConnect = () => {
+    if (!pendingConnect) return;
+    const payload = pendingConnect;
+    setPendingConnect(null);
+    connectMutation.mutate(payload);
+  };
 
   return (
     <div className="page-stack">
       <PageHeader
         title="Open Finance"
         description="Conecte suas contas bancárias ao Valora para acompanhar saldos e transações automaticamente."
+      />
+
+      <BelvoConnectDialog
+        open={pendingConnect !== null}
+        onConfirm={confirmConnect}
+        onCancel={closeConnectDialog}
       />
 
       <Card>
@@ -158,7 +175,7 @@ export function OpenFinancePage() {
             </Field>
             <Button
               type="submit"
-              disabled={connectMutation.isPending || isSubmitting}
+              disabled={connectMutation.isPending || isSubmitting || pendingConnect !== null}
               className="inline-flex items-center gap-2"
             >
               <Landmark size={16} />
