@@ -10,6 +10,18 @@ export function toPeriodEndIso(dateOnly: string): string {
 }
 
 /**
+ * Formats API date-only values (`yyyy-MM-dd` or `yyyy-MM-ddT00:00:00.000Z`)
+ * without applying the browser timezone (avoids day-15 → day-14).
+ */
+export function formatDateOnlyBr(value: string | Date): string {
+  const raw = value instanceof Date ? value.toISOString() : value;
+  const day = raw.slice(0, 10);
+  const [y, m, d] = day.split('-');
+  if (!y || !m || !d) return raw;
+  return `${d}/${m}/${y}`;
+}
+
+/**
  * `datetime-local` only has minute precision. Attach current seconds/ms so
  * consecutive creates in the same minute sort newest-first.
  */

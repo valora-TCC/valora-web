@@ -22,3 +22,4 @@ Substitua `SEU_USUARIO/valora-api` pela URL real do repositório da API quando p
 ## Documentação deste repositório
 
 - [frontend.md](frontend.md) — rotas, variáveis de ambiente, integração com API e Auth
+- [manual-tcc/](manual-tcc/) — manual passo a passo (PDF) para o TCC, com prints de todas as telas

@@ -12,8 +12,8 @@ export function useChartTheme() {
     grid: readCssVar('--color-chart-grid', '#063d32'),
     tick: readCssVar('--color-chart-tick', '#8a9a94'),
     bar: readCssVar('--color-emerald', '#00c978'),
-    tooltipBg: readCssVar('--color-chart-tooltip-bg', '#031c17'),
-    tooltipBorder: readCssVar('--color-chart-tooltip-border', 'rgba(0, 201, 120, 0.15)'),
+    tooltipBg: readCssVar('--color-chart-tooltip-bg', '#12463c'),
+    tooltipBorder: readCssVar('--color-chart-tooltip-border', 'rgba(0, 201, 120, 0.4)'),
     tooltipText: readCssVar('--color-chart-tooltip-text', '#f4f5f2'),
   };
 }

@@ -20,7 +20,6 @@ import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
 const schema = z.object({
   idCarteira: z.string().uuid(),
   idCategoria: z.string().uuid(),
-  tipo: z.enum(['RECEITA', 'DESPESA']),
   valor: z.number().positive(),
   dataTransacao: z.string().min(1),
   descricao: z.string().min(2),
@@ -38,8 +37,8 @@ export function TransacoesPage() {
     queryKey: ['categorias'],
     queryFn: categoriasApi.list,
   });
-  const { data, isLoading } = useQuery({
-    queryKey: ['transacoes'],
+  const { data, isPending } = useQuery({
+    queryKey: ['transacoes', { page: 1, limit: 50 }],
     queryFn: () => transacoesApi.list({ page: 1, limit: 50 }),
   });
 
@@ -48,21 +47,17 @@ export function TransacoesPage() {
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
-      tipo: 'DESPESA',
       dataTransacao: format(new Date(), `yyyy-MM-dd'T'HH:mm`),
       descricao: '',
     },
   });
 
-  const tipo = watch('tipo');
-  const tipoRegister = register('tipo');
-  const categoriasFiltradas = categorias.filter((c) => c.tipo === tipo);
+  const categoriasReceita = categorias.filter((c) => c.tipo === 'RECEITA');
+  const categoriasDespesa = categorias.filter((c) => c.tipo === 'DESPESA');
   const canCreate = carteiras.length > 0 && categorias.length > 0;
   const items = data?.items ?? [];
 
@@ -70,12 +65,11 @@ export function TransacoesPage() {
     mutationFn: transacoesApi.create,
     onSuccess: async () => {
       reset({
-        tipo: 'DESPESA',
         dataTransacao: format(new Date(), `yyyy-MM-dd'T'HH:mm`),
         descricao: '',
         valor: 0,
         idCarteira: carteiras[0]?.id,
-        idCategoria: categorias.filter((c) => c.tipo === 'DESPESA')[0]?.id,
+        idCategoria: categorias[0]?.id,
       });
       await queryClient.invalidateQueries({ queryKey: ['transacoes'] });
       await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
@@ -118,14 +112,17 @@ export function TransacoesPage() {
         <Card>
           <FormSection
             title="Nova transação"
-            description="Escolha o tipo, a carteira e a categoria correspondente. O saldo da carteira atualiza automaticamente."
+            description="Escolha a carteira e a categoria. O tipo (receita ou despesa) vem da categoria, e o saldo da carteira atualiza automaticamente."
           >
             <form
               className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
               onSubmit={(e) =>
                 void handleSubmit(async (values) => {
+                  const categoria = categorias.find((c) => c.id === values.idCategoria);
+                  if (!categoria) return;
                   await createMutation.mutateAsync({
                     ...values,
+                    tipo: categoria.tipo,
                     dataTransacao: toTransactionIso(values.dataTransacao),
                   });
                 })(e)
@@ -149,18 +146,6 @@ export function TransacoesPage() {
                   )}
                 />
               </Field>
-              <Field label="Tipo">
-                <Select
-                  {...tipoRegister}
-                  onChange={(e) => {
-                    void tipoRegister.onChange(e);
-                    setValue('idCategoria', '');
-                  }}
-                >
-                  <option value="DESPESA">Despesa</option>
-                  <option value="RECEITA">Receita</option>
-                </Select>
-              </Field>
               <Field label="Carteira">
                 <Select {...register('idCarteira')}>
                   <option value="">Selecione</option>
@@ -171,21 +156,27 @@ export function TransacoesPage() {
                   ))}
                 </Select>
               </Field>
-              <Field
-                label="Categoria"
-                hint={
-                  categoriasFiltradas.length === 0
-                    ? `Nenhuma categoria de ${tipo === 'RECEITA' ? 'receita' : 'despesa'}. Crie uma em Categorias.`
-                    : undefined
-                }
-              >
+              <Field label="Categoria">
                 <Select {...register('idCategoria')}>
                   <option value="">Selecione</option>
-                  {categoriasFiltradas.map((categoria) => (
-                    <option key={categoria.id} value={categoria.id}>
-                      {categoria.nome}
-                    </option>
-                  ))}
+                  {categoriasDespesa.length > 0 && (
+                    <optgroup label="Despesa">
+                      {categoriasDespesa.map((categoria) => (
+                        <option key={categoria.id} value={categoria.id}>
+                          {categoria.nome}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {categoriasReceita.length > 0 && (
+                    <optgroup label="Receita">
+                      {categoriasReceita.map((categoria) => (
+                        <option key={categoria.id} value={categoria.id}>
+                          {categoria.nome}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
                 </Select>
               </Field>
               <Field label="Data e hora">
@@ -210,7 +201,7 @@ export function TransacoesPage() {
         </Card>
       ) : null}
 
-      {isLoading ? (
+      {isPending && items.length === 0 ? (
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : items.length === 0 ? (
         <EmptyState

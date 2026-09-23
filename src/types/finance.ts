@@ -98,6 +98,7 @@ export type DashboardSummary = {
   expensesByCategory: Array<{
     categoryId: string | null;
     categoryName: string;
+    color: string | null;
     amount: string | number;
   }>;
   recentTransactions: Transacao[];

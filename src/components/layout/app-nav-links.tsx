@@ -3,7 +3,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/utils/format';
 import { appNavGroups } from '@/components/layout/app-nav-config';
-import { useSetupProgress } from '@/features/setup/use-setup-progress';
 
 function isLinkActive(pathname: string, to: string) {
   if (to === '/' || to === '/dashboard') {
@@ -18,8 +17,6 @@ function groupContainsPath(pathname: string, links: { to: string }[]) {
 
 export function AppNavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
-  const { nextStep, coreComplete, isLoading } = useSetupProgress();
-  const highlightTo = !isLoading && !coreComplete ? nextStep?.to : null;
 
   const [openGroupIds, setOpenGroupIds] = useState<string[]>(() => {
     const active = appNavGroups.find((group) => groupContainsPath(location.pathname, group.links));
@@ -94,13 +91,6 @@ export function AppNavLinks({ onNavigate }: { onNavigate?: () => void }) {
                           }
                         />
                         <span className="min-w-0 flex-1 truncate">{label}</span>
-                        {highlightTo === to && (
-                          <span
-                            className="h-2 w-2 shrink-0 rounded-full bg-[var(--color-gold)]"
-                            title="Próximo passo"
-                            aria-label="Próximo passo da configuração"
-                          />
-                        )}
                       </>
                     )}
                   </NavLink>

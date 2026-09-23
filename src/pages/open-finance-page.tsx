@@ -15,6 +15,12 @@ import { Input } from '@/components/ui/input';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
 import { BelvoConnectDialog } from '@/components/open-finance/belvo-connect-dialog';
+import {
+  BELVO_AGGREGATION_MS,
+  DEMO_IDENTITY_ERROR,
+  isAllowedDemoIdentity,
+  waitMs,
+} from '@/features/open-finance/demo-identity';
 import type { OpenFinanceConnection } from '@/types/finance';
 
 const connectSchema = z.object({
@@ -52,6 +58,7 @@ export function OpenFinancePage() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [pendingConnect, setPendingConnect] = useState<ConnectForm | null>(null);
+  const [aggregating, setAggregating] = useState(false);
 
   const { data: connections = [], isLoading } = useQuery({
     queryKey: ['open-finance-connections'],
@@ -74,20 +81,39 @@ export function OpenFinancePage() {
       queryClient.invalidateQueries({ queryKey: ['transacoes'] }),
       queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
       queryClient.invalidateQueries({ queryKey: ['categorias'] }),
+      queryClient.invalidateQueries({ queryKey: ['metas'] }),
+      queryClient.invalidateQueries({ queryKey: ['orcamentos'] }),
+      queryClient.invalidateQueries({ queryKey: ['investments'] }),
     ]);
   };
 
   const connectMutation = useMutation({
-    mutationFn: openFinanceApi.seedDemo,
+    mutationFn: async (payload: ConnectForm) => {
+      const minWait = waitMs(BELVO_AGGREGATION_MS);
+      try {
+        const result = await openFinanceApi.seedDemo(payload);
+        await minWait;
+        return result;
+      } catch (error) {
+        throw error;
+      }
+    },
     onMutate: () => {
-      setFeedback('Conectando banco e importando suas contas…');
+      setAggregating(true);
+      setFeedback('Agregando suas contas com a Belvo… Isso pode demorar um pouco.');
       setErrorMessage(null);
     },
     onSuccess: async () => {
-      setFeedback('Banco conectado com sucesso. Contas e lançamentos já estão disponíveis.');
+      setAggregating(false);
+      setPendingConnect(null);
+      setFeedback(
+        'Banco conectado com sucesso. Contas, lançamentos, metas, orçamentos e investimentos já estão disponíveis.',
+      );
       await invalidateFinanceQueries();
     },
     onError: (error) => {
+      setAggregating(false);
+      setPendingConnect(null);
       setFeedback(null);
       setErrorMessage(
         getErrorMessage(error) ||
@@ -126,17 +152,27 @@ export function OpenFinancePage() {
   });
 
   const onConnect = handleSubmit((values) => {
+    if (!isAllowedDemoIdentity(values.cpf, values.fullName)) {
+      setFeedback(null);
+      setErrorMessage(DEMO_IDENTITY_ERROR);
+      setPendingConnect(null);
+      return;
+    }
+    setErrorMessage(null);
     setPendingConnect(values);
   });
 
-  const closeConnectDialog = () => setPendingConnect(null);
+  const closeConnectDialog = () => {
+    if (aggregating || connectMutation.isPending) return;
+    setPendingConnect(null);
+  };
 
   const confirmConnect = () => {
-    if (!pendingConnect) return;
-    const payload = pendingConnect;
-    setPendingConnect(null);
-    connectMutation.mutate(payload);
+    if (!pendingConnect || connectMutation.isPending) return;
+    connectMutation.mutate(pendingConnect);
   };
+
+  const dialogOpen = pendingConnect !== null || aggregating;
 
   return (
     <div className="page-stack">
@@ -146,7 +182,8 @@ export function OpenFinancePage() {
       />
 
       <BelvoConnectDialog
-        open={pendingConnect !== null}
+        open={dialogOpen}
+        aggregating={aggregating || connectMutation.isPending}
         onConfirm={confirmConnect}
         onCancel={closeConnectDialog}
       />
@@ -175,11 +212,11 @@ export function OpenFinancePage() {
             </Field>
             <Button
               type="submit"
-              disabled={connectMutation.isPending || isSubmitting || pendingConnect !== null}
+              disabled={connectMutation.isPending || isSubmitting || dialogOpen}
               className="inline-flex items-center gap-2"
             >
               <Landmark size={16} />
-              {connectMutation.isPending ? 'Conectando…' : 'Conectar banco'}
+              {connectMutation.isPending ? 'Agregando com a Belvo…' : 'Conectar banco'}
             </Button>
           </form>
         </FormSection>
@@ -335,6 +372,9 @@ export function OpenFinanceCallbackPage({ kind }: { kind: CallbackKind }) {
           queryClient.invalidateQueries({ queryKey: ['transacoes'] }),
           queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
           queryClient.invalidateQueries({ queryKey: ['categorias'] }),
+          queryClient.invalidateQueries({ queryKey: ['metas'] }),
+          queryClient.invalidateQueries({ queryKey: ['orcamentos'] }),
+          queryClient.invalidateQueries({ queryKey: ['investments'] }),
         ]);
       } catch {
         if (!cancelled) {

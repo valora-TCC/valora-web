@@ -5,7 +5,7 @@ export function ProtectedRoute() {
   const { session, loading } = useAuthStore();
   const location = useLocation();
 
-  if (loading) {
+  if (loading && !session) {
     return (
       <div className="grid min-h-screen place-items-center text-[var(--color-text-muted)]">
         Carregando...

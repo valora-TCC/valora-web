@@ -95,8 +95,8 @@ html.dark {
   --color-progress-bg: rgba(6, 61, 50, 0.55);
   --color-chart-grid: #063d32;
   --color-chart-tick: #8a9a94;
-  --color-chart-tooltip-bg: #031c17;
-  --color-chart-tooltip-border: rgba(0, 201, 120, 0.15);
+  --color-chart-tooltip-bg: #12463c;
+  --color-chart-tooltip-border: rgba(0, 201, 120, 0.4);
   --color-chart-tooltip-text: #f4f5f2;
   --color-focus-ring: rgba(0, 201, 120, 0.45);
   --color-focus-shadow: rgba(0, 201, 120, 0.12);
@@ -174,6 +174,16 @@ textarea {
 
 .glow-gold {
   box-shadow: 0 0 24px var(--color-glow-gold);
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+  z-index: 10;
+}
+
+.recharts-tooltip-cursor {
+  fill: rgba(0, 201, 120, 0.14) !important;
+  stroke: none !important;
 }
 
 .btn-primary {

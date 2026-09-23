@@ -11,19 +11,19 @@ export const faqItems: HelpFaqItem[] = [
     id: 'onde-receitas',
     question: 'Onde cadastro minhas receitas?',
     answer:
-      'Em Transações. Escolha o tipo Receita, selecione carteira e categoria de receita, informe valor e data e salve.',
+      'Em Transações. Selecione uma categoria de receita, a carteira, informe valor e data e salve.',
   },
   {
     id: 'onde-despesas',
     question: 'Onde cadastro minhas despesas?',
     answer:
-      'Também em Transações. Escolha o tipo Despesa, vincule uma categoria de despesa e a carteira de onde o dinheiro sai.',
+      'Também em Transações. Vincule uma categoria de despesa e a carteira de onde o dinheiro sai.',
   },
   {
     id: 'como-saldo',
     question: 'Como meu saldo é calculado?',
     answer:
-      'Cada carteira tem um saldo atual atualizado pelos lançamentos. No Dashboard, “Saldo das carteiras” soma esses saldos. O “Resultado do período” é receitas menos despesas apenas no intervalo de datas filtrado.',
+      'Cada carteira tem um saldo atual. No Dashboard, “Saldo das carteiras” soma esses saldos. O “Resultado do período” é saldo das carteiras + receitas − despesas no intervalo de datas filtrado.',
   },
   {
     id: 'ao-cadastrar-despesa',

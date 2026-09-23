@@ -217,26 +217,35 @@ export function InvestmentsPage() {
         />
       ) : (
         <ul className="space-y-3">
-          {data.map((item) => (
-            <ListRow
-              key={item.id}
-              title={
-                <>
-                  {item.name} {item.ticker ? `(${item.ticker})` : ''}
-                </>
-              }
-              subtitle={`${item.quantity} un · média ${formatCurrency(item.averagePrice, item.currency)}`}
-              trailing={
-                <Button
-                  variant="danger"
-                  className="w-full sm:w-auto"
-                  onClick={() => removeMutation.mutate(item.id)}
-                >
-                  Remover
-                </Button>
-              }
-            />
-          ))}
+          {data.map((item) => {
+            const quantity = Number(item.quantity);
+            const averagePrice = Number(item.averagePrice);
+            const totalValue =
+              Number.isFinite(quantity) && Number.isFinite(averagePrice)
+                ? quantity * averagePrice
+                : 0;
+
+            return (
+              <ListRow
+                key={item.id}
+                title={
+                  <>
+                    {item.name} {item.ticker ? `(${item.ticker})` : ''}
+                  </>
+                }
+                subtitle={`${item.quantity} un · média ${formatCurrency(averagePrice, item.currency)} · total ${formatCurrency(totalValue, item.currency)}`}
+                trailing={
+                  <Button
+                    variant="danger"
+                    className="w-full sm:w-auto"
+                    onClick={() => removeMutation.mutate(item.id)}
+                  >
+                    Remover
+                  </Button>
+                }
+              />
+            );
+          })}
         </ul>
       )}
     </div>

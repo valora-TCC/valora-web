@@ -33,13 +33,13 @@ export const gettingStartedSteps: HelpStep[] = [
     id: 'transacoes',
     title: 'Passo 3 — Cadastre receitas e despesas',
     description:
-      'No Valora, receitas e despesas são registradas na mesma tela: Transações. Basta escolher o tipo.',
+      'No Valora, receitas e despesas são registradas na mesma tela: Transações. O tipo vem da categoria escolhida.',
     details: [
       'Receita: dinheiro que entra (ex.: salário de R$ 3.000,00).',
       'Despesa: dinheiro que sai (ex.: supermercado de R$ 150,00 em Alimentação).',
       'Cada lançamento exige carteira, categoria, valor, descrição e data.',
     ],
-    example: 'Tipo Despesa · Descrição: Supermercado · Valor: R$ 150,00 · Categoria: Alimentação.',
+    example: 'Descrição: Supermercado · Valor: R$ 150,00 · Categoria: Alimentação.',
     result:
       'O saldo da carteira, o Dashboard, os gráficos e o orçamento (se houver) são atualizados automaticamente.',
     href: '/transacoes',
@@ -52,10 +52,10 @@ export const gettingStartedSteps: HelpStep[] = [
     details: [
       'Saldo das carteiras: soma dos saldos atuais.',
       'Receitas e despesas no período filtrado.',
-      'Resultado do período: receitas menos despesas.',
+      'Resultado do período: saldo das carteiras + receitas − despesas.',
       'Gráfico de despesas por categoria e lista de transações recentes.',
     ],
-    example: 'Receitas R$ 3.000 · Despesas R$ 1.500 · Resultado R$ 1.500 no mês.',
+    example: 'Saldo R$ 2.500 · Receitas R$ 3.000 · Despesas R$ 1.500 · Resultado R$ 4.000 no mês.',
     result: 'Você enxerga rapidamente se está no azul ou no vermelho no período.',
     href: '/dashboard',
   },

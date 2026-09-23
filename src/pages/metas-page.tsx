@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { metasApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
+import { formatDateOnlyBr } from '@/utils/period';
 import { getErrorMessage } from '@/lib/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
@@ -229,8 +230,7 @@ export function MetasPage() {
                   <p className="font-medium">{meta.nome}</p>
                   <p className="text-sm text-[var(--color-text-muted)]">
                     {formatCurrency(meta.valorAtual)} de {formatCurrency(meta.valorObjetivo)} ·{' '}
-                    {format(new Date(meta.dataInicio), 'dd/MM/yyyy')} —{' '}
-                    {format(new Date(meta.dataFim), 'dd/MM/yyyy')}
+                    {formatDateOnlyBr(meta.dataInicio)} — {formatDateOnlyBr(meta.dataFim)}
                   </p>
                 </div>
                 <Button

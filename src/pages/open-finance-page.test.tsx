@@ -1,8 +1,9 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import { OpenFinancePage } from '@/pages/open-finance-page';
+import { DEMO_ALLOWED_CPF, DEMO_ALLOWED_NAME } from '@/features/open-finance/demo-identity';
 
 vi.mock('@/services/open-finance', () => ({
   openFinanceApi: {
@@ -33,7 +34,12 @@ function renderPage() {
 describe('OpenFinancePage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
     vi.mocked(openFinanceApi.listConnections).mockResolvedValue([]);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('renders connect bank CTA and empty state', async () => {
@@ -73,11 +79,32 @@ describe('OpenFinancePage', () => {
     expect(screen.getByText(/conta corrente/i)).toBeInTheDocument();
   });
 
-  it('connects bank with CPF and name after Belvo confirmation', async () => {
+  it('blocks connect when CPF or name do not match Pedro', async () => {
+    renderPage();
+    fireEvent.change(await screen.findByPlaceholderText(/somente números/i), {
+      target: { value: '76109277673' },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/nome do titular/i), {
+      target: { value: 'Ralph Bragg' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /conectar banco/i }));
+
+    expect(
+      await screen.findByText(/cpf ou nome do titular não conferem/i),
+    ).toBeInTheDocument();
+    expect(openFinanceApi.seedDemo).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole('heading', {
+        name: /valora usa a belvo para conectar sua conta/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('connects bank with Pedro identity after Belvo confirmation and 7s aggregation', async () => {
     vi.mocked(openFinanceApi.seedDemo).mockResolvedValue({
       connection: {
         id: 'conn-1',
-        belvoLinkId: 'demo-76109277673',
+        belvoLinkId: `demo-${DEMO_ALLOWED_CPF}`,
         instituicao: 'Nubank',
         status: 'ACTIVE',
         ultimaSincronizacao: new Date().toISOString(),
@@ -86,17 +113,17 @@ describe('OpenFinancePage', () => {
         carteiras: [],
       },
       accountsImported: 2,
-      transactionsImported: 8,
+      transactionsImported: 18,
       transactionsSkipped: 0,
       demo: true,
     });
 
     renderPage();
     fireEvent.change(await screen.findByPlaceholderText(/somente números/i), {
-      target: { value: '76109277673' },
+      target: { value: DEMO_ALLOWED_CPF },
     });
     fireEvent.change(screen.getByPlaceholderText(/nome do titular/i), {
-      target: { value: 'Ralph Bragg' },
+      target: { value: DEMO_ALLOWED_NAME },
     });
     fireEvent.click(screen.getByRole('button', { name: /conectar banco/i }));
 
@@ -110,21 +137,33 @@ describe('OpenFinancePage', () => {
     fireEvent.click(screen.getByRole('button', { name: /continuar/i }));
 
     await waitFor(() => {
-      expect(openFinanceApi.seedDemo).toHaveBeenCalledWith(
-        { cpf: '76109277673', fullName: 'Ralph Bragg' },
-        expect.anything(),
-      );
+      expect(openFinanceApi.seedDemo).toHaveBeenCalledWith({
+        cpf: DEMO_ALLOWED_CPF,
+        fullName: DEMO_ALLOWED_NAME,
+      });
     });
+
+    expect(
+      await screen.findByRole('heading', {
+        name: /agregando suas contas com a belvo/i,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/banco conectado com sucesso/i)).not.toBeInTheDocument();
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(7000);
+    });
+
     expect(await screen.findByText(/banco conectado com sucesso/i)).toBeInTheDocument();
   });
 
   it('does not connect when Belvo confirmation is cancelled', async () => {
     renderPage();
     fireEvent.change(await screen.findByPlaceholderText(/somente números/i), {
-      target: { value: '76109277673' },
+      target: { value: DEMO_ALLOWED_CPF },
     });
     fireEvent.change(screen.getByPlaceholderText(/nome do titular/i), {
-      target: { value: 'Ralph Bragg' },
+      target: { value: DEMO_ALLOWED_NAME },
     });
     fireEvent.click(screen.getByRole('button', { name: /conectar banco/i }));
 
