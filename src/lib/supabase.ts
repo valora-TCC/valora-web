@@ -12,7 +12,6 @@ export const supabase = createClient(
   supabaseAnonKey ?? 'placeholder',
   {
     auth: {
-      // Session only lasts while the browser tab is open — no auto-login on next visit.
       storage: window.sessionStorage,
       persistSession: true,
       autoRefreshToken: true,
@@ -20,7 +19,6 @@ export const supabase = createClient(
   },
 );
 
-// Remove legacy sessions persisted in localStorage from before this change.
 for (const key of Object.keys(localStorage)) {
   if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
     localStorage.removeItem(key);

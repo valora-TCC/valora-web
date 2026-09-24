@@ -60,9 +60,7 @@ export type HelpTocItem = {
 export type HelpChecklistItem = {
   id: string;
   label: string;
-  /** Maps to setup progress step when checked from real data */
   setupStepId?: 'carteira' | 'categorias' | 'transacao' | 'orcamento' | 'meta' | 'investimento';
-  /** Educational-only items stored in localStorage */
   localKey?: string;
   href?: string;
 };

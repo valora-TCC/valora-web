@@ -47,7 +47,6 @@ export function HelpSearch({
                   type="button"
                   className="flex w-full flex-col items-start rounded-lg px-3 py-2 text-left text-sm hover:bg-[var(--color-nav-hover-bg)]"
                   onClick={() => {
-                    // Features: preferir a tela real do app (ex.: Metas → /metas)
                     navigate(hit.appHref ?? hit.to);
                     onQueryChange('');
                   }}

@@ -79,5 +79,4 @@ export const appNavGroups: AppNavGroup[] = [
   },
 ];
 
-/** Flat list kept for any consumer that needs all links. */
 export const appNavLinks: AppNavLink[] = appNavGroups.flatMap((group) => group.links);

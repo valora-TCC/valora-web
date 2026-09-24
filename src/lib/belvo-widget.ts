@@ -38,7 +38,6 @@ function loadBelvoScript(): Promise<void> {
       existing.addEventListener('error', () => reject(new Error('Falha ao carregar Belvo SDK')), {
         once: true,
       });
-      // Já pode ter carregado antes dos listeners.
       if (window.belvoSDK) resolve();
     });
   }
@@ -61,7 +60,6 @@ export async function openBelvoConnectWidget(input: {
 }): Promise<void> {
   await loadBelvoScript();
 
-  // Aguarda o bootstrap do SDK (script carrega outro module).
   for (let i = 0; i < 40; i += 1) {
     if (window.belvoSDK?.createWidget) break;
     await new Promise((r) => setTimeout(r, 100));

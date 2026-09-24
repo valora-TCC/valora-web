@@ -10,9 +10,7 @@ import {
 export type HelpSearchHit = {
   id: string;
   label: string;
-  /** Rota da Central de Ajuda */
   to: string;
-  /** Rota da funcionalidade no app (quando existir) */
   appHref?: string;
   kind: 'section' | 'feature' | 'faq' | 'term';
 };

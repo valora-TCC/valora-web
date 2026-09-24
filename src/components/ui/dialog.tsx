@@ -8,7 +8,6 @@ type DialogProps = {
   children: ReactNode;
   footer?: ReactNode;
   header?: ReactNode;
-  /** Extra classes for the panel (e.g. Belvo light surface). */
   panelClassName?: string;
 };
 

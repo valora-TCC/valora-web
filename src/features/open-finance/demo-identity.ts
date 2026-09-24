@@ -1,4 +1,3 @@
-/** Allowed sandbox Open Finance holder (case/accents ignored on the name). */
 export const DEMO_ALLOWED_CPF = '47017638883';
 export const DEMO_ALLOWED_NAME = 'Pedro Gomes de Almeida';
 

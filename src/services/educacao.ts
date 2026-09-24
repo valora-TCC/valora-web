@@ -95,7 +95,6 @@ export type MarketEducacaoExtras = {
   atualizadoEm: string;
 };
 
-/** Converte taxa mensal (% a.m.) para equivalente anual (% a.a.). */
 export function mensalParaAnual(taxaMensalPercent: number): number {
   return (Math.pow(1 + taxaMensalPercent / 100, 12) - 1) * 100;
 }

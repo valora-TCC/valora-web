@@ -17,7 +17,6 @@ export type HelpSectionMeta = HelpTocItem & {
   description: string;
 };
 
-/** Hub + seções navegáveis (ordem = paginação anterior/próxima). */
 export const helpSections: HelpSectionMeta[] = [
   {
     id: 'inicio',
@@ -75,7 +74,6 @@ export const helpSections: HelpSectionMeta[] = [
   },
 ];
 
-/** Índice lateral (sem o hub “Início”). */
 export const helpTocItems: HelpTocItem[] = helpSections
   .filter((s) => s.id !== 'inicio')
   .map(({ id, label }) => ({ id, label }));

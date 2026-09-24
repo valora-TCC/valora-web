@@ -2,7 +2,6 @@ type BelvoLogoProps = {
   className?: string;
 };
 
-/** Wordmark Belvo em texto (alinha melhor que SVG &lt;text&gt;). */
 export function BelvoLogo({ className }: BelvoLogoProps) {
   return (
     <span
