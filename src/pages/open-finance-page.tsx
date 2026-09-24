@@ -90,13 +90,9 @@ export function OpenFinancePage() {
   const connectMutation = useMutation({
     mutationFn: async (payload: ConnectForm) => {
       const minWait = waitMs(BELVO_AGGREGATION_MS);
-      try {
-        const result = await openFinanceApi.seedDemo(payload);
-        await minWait;
-        return result;
-      } catch (error) {
-        throw error;
-      }
+      const result = await openFinanceApi.seedDemo(payload);
+      await minWait;
+      return result;
     },
     onMutate: () => {
       setAggregating(true);
