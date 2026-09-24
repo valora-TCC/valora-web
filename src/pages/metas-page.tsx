@@ -1,15 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm, type Resolver } from 'react-hook-form';
+import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
 import { metasApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
+import { formatDateOnlyBr } from '@/utils/period';
 import { getErrorMessage } from '@/lib/api';
 import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
 import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
@@ -105,10 +107,18 @@ export function MetasPage() {
               <Input placeholder="Ex.: Reserva de emergência" {...createForm.register('nome')} />
             </Field>
             <Field label="Valor objetivo">
-              <Input
-                type="number"
-                step="0.01"
-                {...createForm.register('valorObjetivo', { valueAsNumber: true })}
+              <Controller
+                name="valorObjetivo"
+                control={createForm.control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    name={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Field>
             <Field label="Descrição" hint="Opcional" className="sm:col-span-2">
@@ -163,10 +173,18 @@ export function MetasPage() {
                 </Select>
               </Field>
               <Field label="Valor">
-                <Input
-                  type="number"
-                  step="0.01"
-                  {...progressoForm.register('valor', { valueAsNumber: true })}
+                <Controller
+                  name="valor"
+                  control={progressoForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      name={field.name}
+                      ref={field.ref}
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
               </Field>
               <Field label="Observação" hint="Opcional">
@@ -212,8 +230,7 @@ export function MetasPage() {
                   <p className="font-medium">{meta.nome}</p>
                   <p className="text-sm text-[var(--color-text-muted)]">
                     {formatCurrency(meta.valorAtual)} de {formatCurrency(meta.valorObjetivo)} ·{' '}
-                    {format(new Date(meta.dataInicio), 'dd/MM/yyyy')} —{' '}
-                    {format(new Date(meta.dataFim), 'dd/MM/yyyy')}
+                    {formatDateOnlyBr(meta.dataInicio)} — {formatDateOnlyBr(meta.dataFim)}
                   </p>
                 </div>
                 <Button

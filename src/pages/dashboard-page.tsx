@@ -1,7 +1,17 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  type TooltipContentProps,
+} from 'recharts';
 import { format, startOfMonth } from 'date-fns';
 import { dashboardApi } from '@/services/finance';
 import { formatCurrency } from '@/utils/format';
@@ -16,6 +26,18 @@ import { ListRow } from '@/components/ui/list-row';
 import { EmptyState } from '@/components/ui/empty-state';
 import { useSetupProgress } from '@/features/setup/use-setup-progress';
 
+function ExpenseCategoryTooltip({ active, payload }: TooltipContentProps) {
+  if (!active || !payload?.length) return null;
+  const item = payload[0];
+  const name = item?.payload?.name ?? item?.name;
+  return (
+    <div className="rounded-xl border border-[var(--color-chart-tooltip-border)] bg-[var(--color-chart-tooltip-bg)] px-3 py-2 text-sm text-[var(--color-chart-tooltip-text)] shadow-[var(--color-shadow)]">
+      <p className="font-medium">{String(name ?? '')}</p>
+      <p>{formatCurrency(Number(item?.value ?? 0))}</p>
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const isMobile = useMediaQuery('(max-width: 639px)');
   const chartColors = useChartTheme();
@@ -23,7 +45,7 @@ export function DashboardPage() {
   const [to, setTo] = useState(format(new Date(), 'yyyy-MM-dd'));
   const setup = useSetupProgress();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isPending, error } = useQuery({
     queryKey: ['dashboard', from, to],
     queryFn: () =>
       dashboardApi.summary({
@@ -35,10 +57,12 @@ export function DashboardPage() {
   const chartData = useMemo(
     () =>
       (data?.expensesByCategory ?? []).map((item) => ({
+        id: item.categoryId ?? item.categoryName,
         name: item.categoryName,
         amount: Number(item.amount),
+        color: item.color || chartColors.bar,
       })),
-    [data],
+    [data, chartColors.bar],
   );
 
   const hasRecent = (data?.recentTransactions.length ?? 0) > 0;
@@ -66,7 +90,7 @@ export function DashboardPage() {
         />
       </PageHeader>
 
-      {isLoading && <p className="text-[var(--color-text-muted)]">Carregando...</p>}
+      {isPending && !data && <p className="text-[var(--color-text-muted)]">Carregando...</p>}
       {error && <p className="text-[var(--color-danger)]">Falha ao carregar dashboard</p>}
 
       {data && (
@@ -142,15 +166,15 @@ export function DashboardPage() {
                       </>
                     )}
                     <Tooltip
-                      formatter={(value) => formatCurrency(Number(value ?? 0))}
-                      contentStyle={{
-                        background: chartColors.tooltipBg,
-                        border: `1px solid ${chartColors.tooltipBorder}`,
-                        borderRadius: 12,
-                        color: chartColors.tooltipText,
-                      }}
+                      cursor={{ fill: 'rgba(0, 201, 120, 0.14)', stroke: 'none' }}
+                      content={ExpenseCategoryTooltip}
+                      wrapperStyle={{ outline: 'none' }}
                     />
-                    <Bar dataKey="amount" fill={chartColors.bar} radius={[8, 8, 0, 0]} />
+                    <Bar dataKey="amount" radius={isMobile ? [0, 8, 8, 0] : [8, 8, 0, 0]}>
+                      {chartData.map((entry) => (
+                        <Cell key={entry.id} fill={entry.color} />
+                      ))}
+                    </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               )}

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm, type Resolver } from 'react-hook-form';
+import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { categoriasApi, orcamentosApi } from '@/services/finance';
@@ -9,6 +9,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
 import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
@@ -150,10 +151,18 @@ export function OrcamentosPage() {
               />
             </Field>
             <Field label="Valor total" hint="Teto geral do mês">
-              <Input
-                type="number"
-                step="0.01"
-                {...createForm.register('valorTotal', { valueAsNumber: true })}
+              <Controller
+                name="valorTotal"
+                control={createForm.control}
+                render={({ field }) => (
+                  <CurrencyInput
+                    name={field.name}
+                    ref={field.ref}
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
+                  />
+                )}
               />
             </Field>
             <Field label="Observação" hint="Opcional" className="sm:col-span-2">
@@ -210,10 +219,18 @@ export function OrcamentosPage() {
                 </Select>
               </Field>
               <Field label="Limite">
-                <Input
-                  type="number"
-                  step="0.01"
-                  {...limiteForm.register('limite', { valueAsNumber: true })}
+                <Controller
+                  name="limite"
+                  control={limiteForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      name={field.name}
+                      ref={field.ref}
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
               </Field>
               <div className="flex items-end">

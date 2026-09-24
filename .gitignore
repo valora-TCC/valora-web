@@ -38,3 +38,8 @@ coverage
 
 # TypeScript
 *.tsbuildinfo
+
+# Local artifacts
+docs/manual-tcc/credenciais-teste.json
+*.dump
+*.sql.bak

@@ -3,13 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '@/services/finance';
 
 export function ProfileBootstrap() {
-  const { isLoading, isError } = useQuery({
+  const { isPending, isError, data } = useQuery({
     queryKey: ['me'],
     queryFn: usersApi.me,
     retry: 1,
+    staleTime: Infinity,
   });
 
-  if (isLoading) {
+  if (isPending && !data) {
     return (
       <div className="grid min-h-screen place-items-center text-[var(--color-text-muted)]">
         Preparando sua conta...

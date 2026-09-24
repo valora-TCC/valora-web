@@ -28,11 +28,13 @@ export function FormSection({
 export function Field({
   label,
   hint,
+  error,
   children,
   className,
 }: {
   label: string;
   hint?: string;
+  error?: string;
   children: ReactNode;
   className?: string;
 }) {
@@ -40,7 +42,11 @@ export function Field({
     <label className={cn('block space-y-1.5', className)}>
       <span className="text-sm font-medium text-[var(--color-text)]">{label}</span>
       {children}
-      {hint && <span className="block text-xs text-[var(--color-text-muted)]">{hint}</span>}
+      {error ? (
+        <span className="block text-xs text-[var(--color-danger)]">{error}</span>
+      ) : hint ? (
+        <span className="block text-xs text-[var(--color-text-muted)]">{hint}</span>
+      ) : null}
     </label>
   );
 }

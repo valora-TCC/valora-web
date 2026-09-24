@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm, type Resolver } from 'react-hook-form';
+import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { ListRow } from '@/components/ui/list-row';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
@@ -19,7 +20,6 @@ import { PrerequisiteNotice } from '@/components/ui/prerequisite-notice';
 const schema = z.object({
   idCarteira: z.string().uuid(),
   idCategoria: z.string().uuid(),
-  tipo: z.enum(['RECEITA', 'DESPESA']),
   valor: z.number().positive(),
   dataTransacao: z.string().min(1),
   descricao: z.string().min(2),
@@ -37,30 +37,27 @@ export function TransacoesPage() {
     queryKey: ['categorias'],
     queryFn: categoriasApi.list,
   });
-  const { data, isLoading } = useQuery({
-    queryKey: ['transacoes'],
+  const { data, isPending } = useQuery({
+    queryKey: ['transacoes', { page: 1, limit: 50 }],
     queryFn: () => transacoesApi.list({ page: 1, limit: 50 }),
   });
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
     formState: { isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema) as Resolver<FormData>,
     defaultValues: {
-      tipo: 'DESPESA',
       dataTransacao: format(new Date(), `yyyy-MM-dd'T'HH:mm`),
       descricao: '',
     },
   });
 
-  const tipo = watch('tipo');
-  const tipoRegister = register('tipo');
-  const categoriasFiltradas = categorias.filter((c) => c.tipo === tipo);
+  const categoriasReceita = categorias.filter((c) => c.tipo === 'RECEITA');
+  const categoriasDespesa = categorias.filter((c) => c.tipo === 'DESPESA');
   const canCreate = carteiras.length > 0 && categorias.length > 0;
   const items = data?.items ?? [];
 
@@ -68,12 +65,11 @@ export function TransacoesPage() {
     mutationFn: transacoesApi.create,
     onSuccess: async () => {
       reset({
-        tipo: 'DESPESA',
         dataTransacao: format(new Date(), `yyyy-MM-dd'T'HH:mm`),
         descricao: '',
         valor: 0,
         idCarteira: carteiras[0]?.id,
-        idCategoria: categorias.filter((c) => c.tipo === 'DESPESA')[0]?.id,
+        idCategoria: categorias[0]?.id,
       });
       await queryClient.invalidateQueries({ queryKey: ['transacoes'] });
       await queryClient.invalidateQueries({ queryKey: ['carteiras'] });
@@ -116,14 +112,17 @@ export function TransacoesPage() {
         <Card>
           <FormSection
             title="Nova transação"
-            description="Escolha o tipo, a carteira e a categoria correspondente. O saldo da carteira atualiza automaticamente."
+            description="Escolha a carteira e a categoria. O tipo (receita ou despesa) vem da categoria, e o saldo da carteira atualiza automaticamente."
           >
             <form
               className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
               onSubmit={(e) =>
                 void handleSubmit(async (values) => {
+                  const categoria = categorias.find((c) => c.id === values.idCategoria);
+                  if (!categoria) return;
                   await createMutation.mutateAsync({
                     ...values,
+                    tipo: categoria.tipo,
                     dataTransacao: toTransactionIso(values.dataTransacao),
                   });
                 })(e)
@@ -133,19 +132,19 @@ export function TransacoesPage() {
                 <Input placeholder="Ex.: Mercado da semana" {...register('descricao')} />
               </Field>
               <Field label="Valor">
-                <Input type="number" step="0.01" {...register('valor', { valueAsNumber: true })} />
-              </Field>
-              <Field label="Tipo">
-                <Select
-                  {...tipoRegister}
-                  onChange={(e) => {
-                    void tipoRegister.onChange(e);
-                    setValue('idCategoria', '');
-                  }}
-                >
-                  <option value="DESPESA">Despesa</option>
-                  <option value="RECEITA">Receita</option>
-                </Select>
+                <Controller
+                  name="valor"
+                  control={control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      name={field.name}
+                      ref={field.ref}
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
               </Field>
               <Field label="Carteira">
                 <Select {...register('idCarteira')}>
@@ -157,21 +156,27 @@ export function TransacoesPage() {
                   ))}
                 </Select>
               </Field>
-              <Field
-                label="Categoria"
-                hint={
-                  categoriasFiltradas.length === 0
-                    ? `Nenhuma categoria de ${tipo === 'RECEITA' ? 'receita' : 'despesa'}. Crie uma em Categorias.`
-                    : undefined
-                }
-              >
+              <Field label="Categoria">
                 <Select {...register('idCategoria')}>
                   <option value="">Selecione</option>
-                  {categoriasFiltradas.map((categoria) => (
-                    <option key={categoria.id} value={categoria.id}>
-                      {categoria.nome}
-                    </option>
-                  ))}
+                  {categoriasDespesa.length > 0 && (
+                    <optgroup label="Despesa">
+                      {categoriasDespesa.map((categoria) => (
+                        <option key={categoria.id} value={categoria.id}>
+                          {categoria.nome}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  {categoriasReceita.length > 0 && (
+                    <optgroup label="Receita">
+                      {categoriasReceita.map((categoria) => (
+                        <option key={categoria.id} value={categoria.id}>
+                          {categoria.nome}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
                 </Select>
               </Field>
               <Field label="Data e hora">
@@ -196,7 +201,7 @@ export function TransacoesPage() {
         </Card>
       ) : null}
 
-      {isLoading ? (
+      {isPending && items.length === 0 ? (
         <p className="text-[var(--color-text-muted)]">Carregando...</p>
       ) : items.length === 0 ? (
         <EmptyState
@@ -218,7 +223,7 @@ export function TransacoesPage() {
             <ListRow
               key={tx.id}
               title={tx.descricao}
-              subtitle={`${tx.carteira?.nome} · ${tx.categoria?.nome} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')}`}
+              subtitle={`${tx.carteira?.nome} · ${tx.categoria?.nome} · ${format(new Date(tx.dataTransacao), 'dd/MM/yyyy HH:mm')} · ${tx.origem === 'OPEN_FINANCE' ? 'Open Finance' : 'Manual'}`}
               trailing={
                 <>
                   <p
@@ -230,13 +235,15 @@ export function TransacoesPage() {
                   >
                     {formatCurrency(tx.valor)}
                   </p>
-                  <Button
-                    variant="danger"
-                    className="w-full sm:w-auto"
-                    onClick={() => removeMutation.mutate(tx.id)}
-                  >
-                    Remover
-                  </Button>
+                  {tx.origem !== 'OPEN_FINANCE' && (
+                    <Button
+                      variant="danger"
+                      className="w-full sm:w-auto"
+                      onClick={() => removeMutation.mutate(tx.id)}
+                    >
+                      Remover
+                    </Button>
+                  )}
                 </>
               }
             />

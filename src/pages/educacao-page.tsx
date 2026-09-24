@@ -153,6 +153,12 @@ export function EducacaoPage() {
         {loadingConteudos && (
           <p className="text-sm text-[var(--color-text-muted)]">Carregando trilhas…</p>
         )}
+        {!loadingConteudos && porNivel.length === 0 && (
+          <EmptyState
+            title="Nenhuma trilha disponível"
+            description="Os tópicos de estudo ainda não foram carregados. Recarregue a página em instantes."
+          />
+        )}
         <div className="space-y-6">
           {porNivel.map((group) => (
             <section key={group.nivel}>

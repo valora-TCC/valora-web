@@ -14,7 +14,7 @@ export const helpFeatures: HelpFeature[] = [
       'Saldo das carteiras',
       'Receitas no período',
       'Despesas no período',
-      'Resultado do período (receitas − despesas)',
+      'Resultado do período (saldo das carteiras + receitas − despesas)',
       'Gráfico de despesas por categoria',
       'Transações recentes',
       'Filtro de data inicial e final',
@@ -31,7 +31,7 @@ export const helpFeatures: HelpFeature[] = [
         'Saldo das carteiras: R$ 2.500,00',
         'Receitas no período: R$ 3.000,00',
         'Despesas no período: R$ 1.500,00',
-        'Resultado do período: R$ 1.500,00',
+        'Resultado do período: R$ 4.000,00',
       ],
       result: [
         'No período filtrado você ganhou mais do que gastou.',
@@ -114,27 +114,26 @@ export const helpFeatures: HelpFeature[] = [
     href: '/transacoes',
     status: 'available',
     whatIs:
-      'Tela única para registrar entradas e saídas de dinheiro. Não há páginas separadas de Receitas e Despesas: o tipo define o sentido do lançamento.',
+      'Tela única para registrar entradas e saídas de dinheiro. Não há páginas separadas de Receitas e Despesas: o tipo vem da categoria escolhida.',
     whatFor:
       'Manter o histórico financeiro, atualizar saldos e alimentar Dashboard, gráficos e orçamento.',
     whatYouSee: [
-      'Formulário com descrição, valor, tipo, carteira, categoria e data/hora',
+      'Formulário com descrição, valor, carteira, categoria e data/hora',
       'Lista das transações mais recentes',
       'Opção de remover um lançamento',
     ],
     howTo: [
       'Garanta que já existem carteira e categorias.',
-      'Escolha o tipo: Receita ou Despesa.',
-      'Preencha valor, descrição, carteira, categoria e data.',
+      'Escolha a categoria — o tipo (receita ou despesa) é o da própria categoria.',
+      'Preencha valor, descrição, carteira e data.',
       'Salve e confira a lista e o Dashboard.',
     ],
     practicalExample: {
       label: 'Exemplo de receita',
       lines: [
-        'Tipo: Receita',
         'Descrição: Salário',
         'Valor: R$ 3.000,00',
-        'Categoria: Trabalho',
+        'Categoria: Trabalho (Receita)',
       ],
       result: [
         'A receita é registrada no histórico.',

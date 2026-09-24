@@ -19,7 +19,10 @@ export function useSetupProgress(): {
     queries: [
       { queryKey: ['carteiras'], queryFn: carteirasApi.list },
       { queryKey: ['categorias'], queryFn: categoriasApi.list },
-      { queryKey: ['transacoes'], queryFn: () => transacoesApi.list({ page: 1, limit: 1 }) },
+      {
+        queryKey: ['transacoes', { page: 1, limit: 1 }],
+        queryFn: () => transacoesApi.list({ page: 1, limit: 1 }),
+      },
       { queryKey: ['orcamentos'], queryFn: orcamentosApi.list },
       { queryKey: ['metas'], queryFn: metasApi.list },
       { queryKey: ['investments'], queryFn: investmentsApi.list },
@@ -27,12 +30,12 @@ export function useSetupProgress(): {
   });
 
   const isLoading =
-    carteirasQ.isLoading ||
-    categoriasQ.isLoading ||
-    transacoesQ.isLoading ||
-    orcamentosQ.isLoading ||
-    metasQ.isLoading ||
-    investmentsQ.isLoading;
+    (carteirasQ.isPending && !carteirasQ.data) ||
+    (categoriasQ.isPending && !categoriasQ.data) ||
+    (transacoesQ.isPending && !transacoesQ.data) ||
+    (orcamentosQ.isPending && !orcamentosQ.data) ||
+    (metasQ.isPending && !metasQ.data) ||
+    (investmentsQ.isPending && !investmentsQ.data);
 
   if (isLoading) {
     return { isLoading: true, coreComplete: false, nextStep: null, steps: [] };

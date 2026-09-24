@@ -42,8 +42,9 @@ export const glossaryTerms: HelpGlossaryTerm[] = [
   {
     id: 'resultado',
     name: 'Resultado do período',
-    definition: 'Diferença entre receitas e despesas no intervalo de datas filtrado no Dashboard.',
-    example: 'Receitas R$ 3.000 − Despesas R$ 1.500 = Resultado R$ 1.500.',
+    definition:
+      'Saldo das carteiras somado às receitas e subtraído das despesas no intervalo de datas filtrado no Dashboard.',
+    example: 'Saldo R$ 2.500 + Receitas R$ 3.000 − Despesas R$ 1.500 = Resultado R$ 4.000.',
   },
   {
     id: 'meta',

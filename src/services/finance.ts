@@ -44,7 +44,7 @@ export const transacoesApi = {
   create: (payload: {
     idCarteira: string;
     idCategoria: string;
-    tipo: TipoFinanceiro;
+    tipo?: TipoFinanceiro;
     valor: number;
     dataTransacao: string;
     descricao: string;

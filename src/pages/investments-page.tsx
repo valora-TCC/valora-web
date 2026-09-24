@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useForm, type Resolver } from 'react-hook-form';
+import { Controller, useForm, type Resolver } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
@@ -10,6 +10,7 @@ import { PageHeader } from '@/components/ui/page-header';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input, Select } from '@/components/ui/input';
+import { CurrencyInput } from '@/components/ui/currency-input';
 import { ListRow } from '@/components/ui/list-row';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FormSection, Field } from '@/components/ui/form-section';
@@ -170,10 +171,18 @@ export function InvestmentsPage() {
                 />
               </Field>
               <Field label="Preço unitário">
-                <Input
-                  type="number"
-                  step="0.01"
-                  {...txForm.register('unitPrice', { valueAsNumber: true })}
+                <Controller
+                  name="unitPrice"
+                  control={txForm.control}
+                  render={({ field }) => (
+                    <CurrencyInput
+                      name={field.name}
+                      ref={field.ref}
+                      value={field.value}
+                      onBlur={field.onBlur}
+                      onChange={field.onChange}
+                    />
+                  )}
                 />
               </Field>
               <Field label="Data e hora">
@@ -208,26 +217,35 @@ export function InvestmentsPage() {
         />
       ) : (
         <ul className="space-y-3">
-          {data.map((item) => (
-            <ListRow
-              key={item.id}
-              title={
-                <>
-                  {item.name} {item.ticker ? `(${item.ticker})` : ''}
-                </>
-              }
-              subtitle={`${item.quantity} un · média ${formatCurrency(item.averagePrice, item.currency)}`}
-              trailing={
-                <Button
-                  variant="danger"
-                  className="w-full sm:w-auto"
-                  onClick={() => removeMutation.mutate(item.id)}
-                >
-                  Remover
-                </Button>
-              }
-            />
-          ))}
+          {data.map((item) => {
+            const quantity = Number(item.quantity);
+            const averagePrice = Number(item.averagePrice);
+            const totalValue =
+              Number.isFinite(quantity) && Number.isFinite(averagePrice)
+                ? quantity * averagePrice
+                : 0;
+
+            return (
+              <ListRow
+                key={item.id}
+                title={
+                  <>
+                    {item.name} {item.ticker ? `(${item.ticker})` : ''}
+                  </>
+                }
+                subtitle={`${item.quantity} un · média ${formatCurrency(averagePrice, item.currency)} · total ${formatCurrency(totalValue, item.currency)}`}
+                trailing={
+                  <Button
+                    variant="danger"
+                    className="w-full sm:w-auto"
+                    onClick={() => removeMutation.mutate(item.id)}
+                  >
+                    Remover
+                  </Button>
+                }
+              />
+            );
+          })}
         </ul>
       )}
     </div>

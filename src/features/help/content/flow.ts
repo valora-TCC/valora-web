@@ -43,7 +43,7 @@ export const usageFlowSteps: HelpFlowStep[] = [
     title: '5. Cadastrar receitas e despesas',
     objective: 'Registrar a realidade financeira.',
     explanation:
-      'Em Transações, escolha o tipo Receita ou Despesa e preencha valor, carteira, categoria e data.',
+      'Em Transações, escolha a categoria (o tipo receita ou despesa vem dela) e preencha valor, carteira e data.',
     example: 'Salário R$ 3.000 e supermercado R$ 150 em Alimentação.',
     expectedResult: 'Histórico preenchido e saldos atualizados.',
     href: '/transacoes',
@@ -54,7 +54,7 @@ export const usageFlowSteps: HelpFlowStep[] = [
     objective: 'Ver o resumo do período.',
     explanation:
       'Ajuste o intervalo de datas e leia saldo, receitas, despesas, resultado e gastos por categoria.',
-    example: 'No mês: receitas R$ 3.000, despesas R$ 1.500, resultado R$ 1.500.',
+    example: 'No mês: saldo R$ 2.500, receitas R$ 3.000, despesas R$ 1.500, resultado R$ 4.000.',
     expectedResult: 'Visão clara da saúde financeira no período.',
     href: '/dashboard',
   },
